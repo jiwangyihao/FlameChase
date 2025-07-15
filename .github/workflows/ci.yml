@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    # sometimes will stuck on Build `hap`, like: https://github.com/harmonyos-dev/aigc-harmonyos-sample/actions/runs/8078878412/job/22074563084
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      - name: Setup HarmonyOS SDK
+        uses: jiwangyihao/setup-harmonyos-sdk@v2.1.4
+
+      - name: Release CER file
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.CER_CONTENT }}
+          filename: "default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.cer"
+          is-executable: false
+          working-directory: "signing"
+
+      - name: Release CSR file
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.CSR_CONTENT }}
+          filename: "default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.csr"
+          is-executable: false
+          working-directory: "signing"
+
+      - name: Release P7B file
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.P7B_CONTENT }}
+          filename: "default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.p7b"
+          is-executable: false
+          working-directory: "signing"
+
+      - name: Release P12 file
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.P12_CONTENT }}
+          filename: "default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.p12"
+          is-executable: false
+          working-directory: "signing"
+
+      - name: Build
+        run: |
+          ohpm install --all
+          ace build hap
+          ace build bundle
+          ace build apk
+          hvigorw --mode project -p product=default assembleApp --analyze=normal --parallel --incremental --daemon
+
+      - name: Upload HAP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HAP
+          path: entry/build/default/outputs/default/*
+
+      - name: Upload APP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: APP
+          path: build/outputs/default/*
+
+      - name: Upload Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bundle
+          path: .arkui-x/build/ace_assets/*
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: APK
+          path: .arkui-x/android/app/build/outputs/apk/*
+
+      - name: Upload iOS APP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS APP
+          path: .arkui-x/ios/build/outputs/app/*
