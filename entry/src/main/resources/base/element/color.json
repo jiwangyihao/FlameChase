@@ -3,6 +3,14 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "primary",
+      "value": "#FF8C00"
+    },
+    {
+      "name": "surface",
+      "value": "#66ccff"
     }
   ]
 }

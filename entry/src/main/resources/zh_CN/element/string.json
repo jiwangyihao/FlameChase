@@ -1,0 +1,24 @@
+{
+  "string": [
+    {
+      "name": "EntryAbility_label",
+      "value": "逐火"
+    },
+    {
+      "name": "Coreflames",
+      "value": "火种"
+    },
+    {
+      "name": "Schedule",
+      "value": "计划"
+    },
+    {
+      "name": "Awards",
+      "value": "奖励"
+    },
+    {
+      "name": "Chronicle",
+      "value": "记载"
+    }
+  ]
+}

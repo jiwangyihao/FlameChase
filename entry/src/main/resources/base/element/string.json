@@ -10,7 +10,23 @@
     },
     {
       "name": "EntryAbility_label",
-      "value": "label"
+      "value": "FlameChase"
+    },
+    {
+      "name": "Coreflames",
+      "value": "Coreflames"
+    },
+    {
+      "name": "Schedule",
+      "value": "Schedule"
+    },
+    {
+      "name": "Awards",
+      "value": "Awards"
+    },
+    {
+      "name": "Chronicle",
+      "value": "Chronicle"
     }
   ]
 }
