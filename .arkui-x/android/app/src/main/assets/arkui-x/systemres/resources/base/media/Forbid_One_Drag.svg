@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic_forbid</title>
+    <g id="ic_forbid" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="矩形" fill="#9C9C9D" x="16" y="0" width="24" height="24" rx="12"></rect>
+        <g id="角标" transform="translate(16.000000, 0.000000)">
+            <path d="M12,5 C15.8659932,5 19,8.13400675 19,12 C19,15.8659932 15.8659932,19 12,19 C8.13400675,19 5,15.8659932 5,12 C5,8.13400675 8.13400675,5 12,5 Z M6,12 C6,15.3137085 8.6862915,18 12,18 C13.4836377,18 14.8415035,17.4615068 15.8888109,16.569307 L7.45968821,8.07740645 C6.55017311,9.12921707 6,10.5003586 6,12 Z M12,6 C10.546487,6 9.2136901,6.51684748 8.17536704,7.37678485 L16.5938431,15.8598249 C17.47137,14.8165068 18,13.4699874 18,12 C18,8.6862915 15.3137085,6 12,6 Z" id="形状结合" fill="#FFFFFF" fill-rule="nonzero"></path>
+        </g>
+    </g>
+</svg>

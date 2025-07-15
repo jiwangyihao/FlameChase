@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>时间</title>
+    <defs>
+        <path d="M11,0 C17.0751322,0 22,4.92486775 22,11 C22,17.0751322 17.0751322,22 11,22 C4.92486775,22 0,17.0751322 0,11 C0,4.92486775 4.92486775,0 11,0 Z M11,1.5 C5.75329488,1.5 1.5,5.75329488 1.5,11 C1.5,16.2467051 5.75329488,20.5 11,20.5 C16.2467051,20.5 20.5,16.2467051 20.5,11 C20.5,5.75329488 16.2467051,1.5 11,1.5 Z" id="path-1"></path>
+        <path d="M0.825,0 C1.28063496,0 1.65,0.369365084 1.65,0.825 L1.65,6.40614018 L5.40362526,8.64193583 C5.79508061,8.87510085 5.92340023,9.3814556 5.69023521,9.77291095 C5.45707019,10.1643662 4.95071544,10.2926859 4.55926009,10.0595209 L0.40281736,7.58379248 C0.15303255,7.43501154 0,7.16573748 0,6.875 L0,0.825 C0,0.369365084 0.36936504,0 0.825,0 Z" id="path-3"></path>
+    </defs>
+    <g id="时间" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Public/ic_public_add_norm" transform="translate(1.000000, 1.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <g id="形状结合" fill-rule="nonzero"></g>
+            <g id="Symbol/color-light/colorPrimary" mask="url(#mask-2)" fill="#000000" fill-opacity="0.9">
+                <g transform="translate(-1.000000, -1.000000)" id="color/#000000">
+                    <rect x="0" y="0" width="24" height="24"></rect>
+                </g>
+            </g>
+        </g>
+        <g id="编组-Clipped" transform="translate(11.303091, 5.077104)">
+            <mask id="mask-4" fill="white">
+                <use xlink:href="#path-3"></use>
+            </mask>
+            <g id="path-1"></g>
+            <g id="Symbol/color-light/colorPrimary" mask="url(#mask-4)" fill="#000000" fill-opacity="0.9">
+                <g transform="translate(-11.303091, -5.077104)" id="color/#000000">
+                    <rect x="0" y="0" width="24" height="24"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

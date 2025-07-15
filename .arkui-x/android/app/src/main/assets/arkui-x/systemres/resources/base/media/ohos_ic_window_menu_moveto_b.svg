@@ -1,0 +1,14 @@
+<svg width="24.000000" height="24.000000" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<clipPath id="clip469_25827">
+			<rect id="属性 1=down" width="24.000000" height="24.000000" fill="white" fill-opacity="0"/>
+		</clipPath>
+	</defs>
+	<rect id="属性 1=down" width="24.000000" height="24.000000" fill="#FFFFFF" fill-opacity="0"/>
+	<g clip-path="url(#clip469_25827)">
+		<path id="矩形 1915 (边框)" d="M7.5 23C5.29 23 3.5 21.2 3.5 19L3.5 5C3.5 2.79 5.29 1 7.5 1L16.5 1C18.7 1 20.5 2.79 20.5 5L20.5 19C20.5 21.2 18.7 23 16.5 23L7.5 23ZM7.5 21.5C6.11 21.5 5 20.38 5 19L5 5C5 3.61 6.11 2.5 7.5 2.5L16.5 2.5C17.88 2.5 19 3.61 19 5L19 19C19 20.38 17.88 21.5 16.5 21.5L7.5 21.5Z" fill="#000000" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="矩形 1971" d="M8.96 18.03L11.46 20.53C11.82 20.88 12.17 20.88 12.53 20.53L15.03 18.03L13.96 16.96L11.46 19.46L12 20L12.53 19.46L10.03 16.96L8.96 18.03ZM15 18.03L15.03 18.03C15.32 17.73 15.32 17.26 15.03 16.96C14.73 16.67 14.26 16.67 13.96 16.96L13.96 16.99L15 18.03ZM10.03 16.99L10.03 16.96C9.73 16.67 9.26 16.67 8.96 16.96C8.67 17.26 8.67 17.73 8.96 18.03L8.99 18.03L10.03 16.99Z" fill="#000000" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="矢量 7" d="M12 19L12 13.5" stroke="#000000" stroke-opacity="1.000000" stroke-width="1.500000" stroke-linecap="round"/>
+		<path id="减去顶层" d="M17.5 11L17.5 5C17.5 4.44775 17.0527 4 16.5 4L7.5 4C6.94727 4 6.5 4.44775 6.5 5L6.5 11C6.5 11.5522 6.94727 12 7.5 12L16.5 12C17.0527 12 17.5 11.5522 17.5 11Z" clip-rule="evenodd" fill="#000000" fill-opacity="1.000000" fill-rule="evenodd"/>
+	</g>
+</svg>

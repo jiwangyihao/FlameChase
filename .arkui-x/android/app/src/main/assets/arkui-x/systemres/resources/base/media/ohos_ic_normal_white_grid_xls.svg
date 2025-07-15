@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="281px" height="320px" viewBox="0 0 281 320" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic_normal_white_grid_xls</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M16.4285714,0 L196.612403,0 L196.612403,0 L196.468677,65.674268 C196.446576,75.773165 204.615433,83.9778551 214.71433,83.9999562 C214.727669,83.9999854 214.741008,84 214.754347,84 L280.428571,84 L280.428571,84 L280.428571,304 C280.428571,312.836556 273.265127,320 264.428571,320 L16.4285714,320 C7.59201543,320 0.428571429,312.836556 0.428571429,304 L0.428571429,16 C0.428571429,7.163444 7.59201543,-1.53107837e-16 16.4285714,0 Z" id="矩形备份-76" fill="#38C48C"></path>
+        <path d="M196.428571,0 L280.428571,84 L214.714286,84 C204.615365,84 196.428571,75.8132069 196.428571,65.7142857 L196.428571,0 L196.428571,0 Z" id="矩形备份-77" fill="#5FE5B0"></path>
+        <g id="编组-3" stroke-linecap="round" stroke-linejoin="round" transform="translate(91.428571, 144.000000)" stroke="#FFFFFF" stroke-width="16">
+            <g id="编组-2" transform="translate(0.000000, 0.500000)">
+                <line x1="7" y1="7" x2="90" y2="90" id="路径-5" transform="translate(49.000000, 49.000000) rotate(10.000000) translate(-49.000000, -49.000000) "></line>
+                <line x1="91.5" y1="7.5" x2="8.5" y2="90.5" id="路径-5" transform="translate(49.500000, 49.500000) rotate(-10.000000) translate(-49.500000, -49.500000) "></line>
+            </g>
+        </g>
+    </g>
+</svg>
