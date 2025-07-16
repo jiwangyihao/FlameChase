@@ -1,4 +1,5 @@
 import { resourceManager } from '@kit.LocalizationKit';
+import { NumberObject } from './BaseObjects';
 
 /**
  * Design system utility for managing colors and their variations.
@@ -167,7 +168,10 @@ export class DesignSystem {
    * @param variation Lightness value (0-1000), where 0 is white and 1000 is black.
    * @returns Color with applied light variation.
    */
-  getColor(_darkHint: number, resourceStr: string, variation: number = 600, alpha: number = 1): string | Resource {
+  getColor(
+    _darkHint: NumberObject, resourceStr: string, variation: number = 600,
+    alpha: number = 1
+  ): string | Resource {
     if (this.context === undefined) {
       throw new Error('DesignSystem context is not registered. Call register() first.');
     }

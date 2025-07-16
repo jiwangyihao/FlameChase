@@ -1,8 +1,8 @@
 import { DesignSystem } from '../utils/DesignSystem';
 
-@Component
+@ComponentV2
 export struct SchedulePage {
-  @Consume('DesignSystem') ds: DesignSystem;
+  @Consumer('DesignSystem') ds: DesignSystem = new DesignSystem();
 
   build() {
     Column() {

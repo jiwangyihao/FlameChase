@@ -5,15 +5,20 @@ import { ChroniclePage } from './ChroniclePage';
 import { CoreflamesPage } from './CoreflamesPage';
 import { SchedulePage } from './SchedulePage';
 import { ConfigurationConstant } from '@kit.AbilityKit';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { NumberObject, StringObject } from '../utils/BaseObjects';
 
 @Entry
-@Component
+@ComponentV2
 struct Index {
-  @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointTypeEnum.MD;
-  @StorageProp('currentColorMode') ccm: ConfigurationConstant.ColorMode =
-    ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
-  @Provide('DesignSystem') ds: DesignSystem = new DesignSystem();
-  @State currentIndex: number = 0;
+  @Provider('DesignSystem') ds: DesignSystem = new DesignSystem();
+  @Local currentBreakpoint: StringObject =
+    AppStorageV2.connect<StringObject>(StringObject, 'currentBreakpoint',
+      () => new StringObject(BreakpointTypeEnum.MD))!;
+  @Local ccm: NumberObject =
+    AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
+      () => new NumberObject(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT))!;
+  @Local currentIndex: number = 0;
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
 
@@ -60,7 +65,7 @@ struct Index {
 
   build() {
     Tabs({
-      barPosition: this.currentBreakpoint === BreakpointTypeEnum.LG ? BarPosition.Start : BarPosition.End,
+      barPosition: this.currentBreakpoint.value === BreakpointTypeEnum.LG ? BarPosition.Start : BarPosition.End,
       controller: this.tabsController
     }) {
       TabContent() {
@@ -100,7 +105,7 @@ struct Index {
       .tabBar(this.tabBarBuilder($r('app.string.Chronicle'), 3, $r("app.media.mdi__scroll_text")))
     }
     .scrollable(false)
-    .vertical(this.currentBreakpoint === BreakpointTypeEnum.LG ? true : false)
+    .vertical(this.currentBreakpoint.value === BreakpointTypeEnum.LG ? true : false)
     .divider({
       strokeWidth: 0.5,
       color: this.ds.getColor(this.ccm, 'surface', 900, 0.2)

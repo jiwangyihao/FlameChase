@@ -1,7 +1,8 @@
+@ObservedV2
 export class TimeDownState {
-  total: number = 0;
-  timeDown: number = 0;
-  started: boolean = false;
+  @Trace total: number = 0;
+  @Trace timeDown: number = 0;
+  @Trace started: boolean = false;
   intervalId: number | null = null;
   reject: ((reason?: string) => void) | null = null;
 

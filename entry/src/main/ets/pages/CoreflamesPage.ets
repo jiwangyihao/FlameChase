@@ -2,6 +2,9 @@ import { createCubicBezier } from '../utils/Bezier';
 import { Design, DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
+import { CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
+import { NumberObject } from '../utils/BaseObjects';
+import { AppStorageV2 } from '@kit.ArkUI';
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
@@ -29,16 +32,20 @@ function progressScale(progress: number) {
   })
 }
 
-@Component
+@ComponentV2
 export struct CoreflamesPage {
-  @Consume('DesignSystem') ds: DesignSystem;
-  @StorageProp('currentColorMode') ccm: ConfigurationConstant.ColorMode =
-    ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
-  @StorageLink('timeDownState') timeDownState: TimeDownState = new TimeDownState();
-  @State strokeDashOffsetProgress: number = 0;
-  @State scaleProgress: number = 0;
-  @State ringRotate: number = 0;
-  @State selectedTime: number = 0;
+  @Consumer('DesignSystem') ds: DesignSystem = new DesignSystem();
+  @Local ccm: NumberObject =
+    AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
+      () => new NumberObject(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT))!;
+  @Local timeDownState: TimeDownState =
+    AppStorageV2.connect<TimeDownState>(TimeDownState, () => new TimeDownState())!;
+  @Local coreflameGroups: CoreflameGroupList =
+    AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList())!;
+  @Local strokeDashOffsetProgress: number = 0;
+  @Local scaleProgress: number = 0;
+  @Local ringRotate: number = 0;
+  @Local selectedTime: number = 0;
   private ringPath: string =
     'M 104.3368 1.0266 A 120 120 0 0 0 9.1344 165.922 ' +
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
@@ -191,7 +198,7 @@ export struct CoreflamesPage {
             angle: -120
           })
 
-        ForEach([0, 1, 2, 3], (index: number) => {
+        ForEach(this.coreflameGroups, (coreflameGroup: CoreflameGroup, index: number) => {
           Shape() {
             Path()
               .commands(this.parsePath(this.ringPath))
@@ -203,27 +210,51 @@ export struct CoreflamesPage {
               .progressStrokeDashOffset((this.strokeDashOffsetProgress) * 4 + 0.25 * index)
             Path()
               .commands(this.parsePath("M 120 -18 Q 120 0 108 0 Q 120 0 120 18 Q 120 0 132 0 Q 120 0 120 -18 Z"))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 900))
+              .stroke(
+                coreflameGroup.coreflames[0].recycledTime > 0
+                  ? this.ds.getColor(this.ccm, 'primary')
+                  : this.ds.getColor(this.ccm, 'surface', 900)
+              )
               .strokeWidth(1)
               .strokeDashArray([30 * Math.PI, 240 * Math.PI])
               .progressStrokeDashOffset(this.strokeDashOffsetProgress + 0.25 * index + 0.1)
-              .fill(this.ds.getColor(this.ccm, 'surface', 200))
+              .fill(
+                coreflameGroup.coreflames[0].recycledTime > 0
+                  ? this.ds.getColor(this.ccm, 'primary', 400)
+                  : this.ds.getColor(this.ccm, 'surface', 200)
+              )
               .fillOpacity(1)
             Path()
               .commands(this.parsePath("M 235.7941 186.5229 Q 223.9231 180 217.9231 190.3923 Q 223.9231 180 208.3346 171 Q 223.9231 180 229.9231 169.6076 Q 223.9231 180 235.7941 186.5229 Z"))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 900))
+              .stroke(
+                coreflameGroup.coreflames[1].recycledTime > 0
+                  ? this.ds.getColor(this.ccm, 'primary')
+                  : this.ds.getColor(this.ccm, 'surface', 900)
+              )
               .strokeWidth(1)
               .strokeDashArray([30 * Math.PI, 240 * Math.PI])
               .progressStrokeDashOffset(this.strokeDashOffsetProgress + 0.25 * index + 0.1)
-              .fill(this.ds.getColor(this.ccm, 'surface', 200))
+              .fill(
+                coreflameGroup.coreflames[1].recycledTime > 0
+                  ? this.ds.getColor(this.ccm, 'primary', 400)
+                  : this.ds.getColor(this.ccm, 'surface', 200)
+              )
               .fillOpacity(1)
             Path()
               .commands(this.parsePath("M 3.6328 186.5229 Q 16.0769 180 10.0769 169.6076 Q 16.0769 180 31.6654 171 Q 16.0769 180 22.0769 190.3923 Q 16.0769 180 3.6328 186.5229 Z"))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 900))
+              .stroke(
+                coreflameGroup.coreflames[2].recycledTime > 0
+                  ? this.ds.getColor(this.ccm, 'primary')
+                  : this.ds.getColor(this.ccm, 'surface', 900)
+              )
               .strokeWidth(1)
               .strokeDashArray([30 * Math.PI, 240 * Math.PI])
               .progressStrokeDashOffset(this.strokeDashOffsetProgress + 0.25 * index + 0.1)
-              .fill(this.ds.getColor(this.ccm, 'surface', 200))
+              .fill(
+                coreflameGroup.coreflames[2].recycledTime > 0
+                  ? this.ds.getColor(this.ccm, 'primary', 400)
+                  : this.ds.getColor(this.ccm, 'surface', 200)
+              )
               .fillOpacity(1)
           }
           .viewPort({
@@ -295,7 +326,17 @@ export struct CoreflamesPage {
             this.timeDownState.stop();
           } else {
             if (this.selectedTime > 0) {
-              this.timeDownState.start(this.selectedTime);
+              this.timeDownState.start(this.selectedTime).then(() => {
+                const unrecycledCoreflames = this.coreflameGroups
+                  .flatMap((coreflameGroup: CoreflameGroup) => coreflameGroup.unrecycledCoreflames);
+                if (unrecycledCoreflames.length > 0) {
+                  const randomIndex = Math.floor(Math.random() * unrecycledCoreflames.length);
+                  const selectedCoreflame = unrecycledCoreflames[randomIndex];
+                  selectedCoreflame.recycledTime = new Date().getTime();
+                }
+              }).catch((reason: string) => {
+                console.error(reason);
+              });
             }
             this.selectedTime = 0;
           }
