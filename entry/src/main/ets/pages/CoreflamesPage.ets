@@ -1,6 +1,9 @@
 import { createCubicBezier } from '../utils/Bezier';
-import { DesignSystem } from '../utils/DesignSystem';
+import { Design, DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
+import { parseTimeText, TimeDownState } from '../model/TimeDownState';
+
+const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
 @AnimatableExtend(Path)
 function progressStrokeDashOffset(progress: number) {
@@ -31,14 +34,16 @@ export struct CoreflamesPage {
   @Consume('DesignSystem') ds: DesignSystem;
   @StorageProp('currentColorMode') ccm: ConfigurationConstant.ColorMode =
     ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  @StorageLink('timeDownState') timeDownState: TimeDownState = new TimeDownState();
   @State strokeDashOffsetProgress: number = 0;
   @State scaleProgress: number = 0;
   @State ringRotate: number = 0;
-  @State timeDown: number = 100;
+  @State selectedTime: number = 0;
   private ringPath: string =
     'M 104.3368 1.0266 A 120 120 0 0 0 9.1344 165.922 ' +
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
       'M 230.8655 165.922 A 120 120 0 0 0 135.6631 1.0266';
+  private startSelectedTime: number = 0;
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -95,10 +100,6 @@ export struct CoreflamesPage {
         }
       }
     ]);
-
-    setInterval(() => {
-      this.timeDown = (this.timeDown - 1 + 150) % 150;
-    }, 1000);
   }
 
   build() {
@@ -112,7 +113,11 @@ export struct CoreflamesPage {
 
       Stack() {
         // Core time-down component
-        Progress({ value: 200, total: 300, type: ProgressType.Ring })
+        Progress({
+          value: MAX_TIME_DOWN,
+          total: MAX_TIME_DOWN * 1.5,
+          type: ProgressType.Ring
+        })
           .width('85%')
           .height('85%')
           .color(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
@@ -124,7 +129,13 @@ export struct CoreflamesPage {
             angle: -120
           })
 
-        Progress({ value: 0, total: 300, type: ProgressType.Ring })
+        Progress({
+          value: 0,
+          total: this.timeDownState.started
+            ? this.timeDownState.total * 1.5
+            : MAX_TIME_DOWN * 1.5,
+          type: ProgressType.Ring
+        })
           .width('85%')
           .height('85%')
           .color(new LinearGradient([
@@ -145,16 +156,30 @@ export struct CoreflamesPage {
             angle: -120
           })
 
-        Progress({ value: this.timeDown, total: 225, type: ProgressType.Ring })
+        Progress({
+          value: this.timeDownState.started
+            ? this.timeDownState.timeDown / this.timeDownState.total * MAX_TIME_DOWN
+            : this.selectedTime,
+          total: MAX_TIME_DOWN * 1.5,
+          type: ProgressType.Ring
+        })
           .width('85%')
           .height('85%')
           .color(new LinearGradient([
             {
-              color: this.ds.getColor(this.ccm, 'surface', 800),
+              color: this.ds.getColor(
+                this.ccm,
+                'surface',
+                this.timeDownState.started ? 800 : this.selectedTime / MAX_TIME_DOWN * 300 + 500
+              ),
               offset: 0
             },
             {
-              color: this.ds.getColor(this.ccm, 'surface', 900),
+              color: this.ds.getColor(
+                this.ccm,
+                'surface',
+                this.timeDownState.started ? 900 : this.selectedTime / MAX_TIME_DOWN * 300 + 600
+              ),
               offset: 0.5
             }
           ]))
@@ -170,6 +195,7 @@ export struct CoreflamesPage {
           Shape() {
             Path()
               .commands(this.parsePath(this.ringPath))
+              .stroke(this.ds.getColor(this.ccm, 'surface', 200, 0.25))
             Path()
               .commands(this.parsePath(this.ringPath))
               .stroke(this.ds.getColor(this.ccm, 'surface', 900))
@@ -208,7 +234,6 @@ export struct CoreflamesPage {
           })
           .width('100%')
           .height('100%')
-          .stroke(this.ds.getColor(this.ccm, 'surface', 200, 0.25))
           .strokeWidth(2)
           .fillOpacity(0)
           .progressScale(this.scaleProgress + 0.25 * index)
@@ -217,8 +242,11 @@ export struct CoreflamesPage {
           })
         }, (item: number) => item.toString())
 
-        Text(this.timeDownText()) {
-
+        Text(
+          this.timeDownState.started
+            ? this.timeDownState.timeDownText
+            : parseTimeText(this.selectedTime)
+        ) {
         }
         .fontSize(this.ds.getSize(3))
         .fontWeight(FontWeight.Bolder)
@@ -226,6 +254,52 @@ export struct CoreflamesPage {
       }
       .width('100%')
       .aspectRatio(1)
+      .gesture(
+        PanGesture()
+          .onActionStart((event: GestureEvent | undefined) => {
+            if (event) {
+              this.startSelectedTime = this.selectedTime;
+            }
+          })
+          .onActionUpdate((event: GestureEvent | undefined) => {
+            if (event) {
+              this.selectedTime = Math.max(
+                0,
+                Math.min(
+                  MAX_TIME_DOWN,
+                  this.startSelectedTime + Math.floor(
+                    (event.offsetX - event.offsetY)
+                  )
+                )
+              );
+            }
+          })
+      )
+
+      Button(
+        this.timeDownState.started ? '堕入黑潮' : '选择逐火',
+        { type: ButtonType.Normal, stateEffect: true }
+      )
+        .borderRadius(8)
+        .backgroundColor(
+          this.timeDownState.started
+            ? this.ds.getColor(this.ccm, 'surface', 900, 0.5)
+            : this.selectedTime > 0
+            ? this.ds.getColor(this.ccm, 'primary')
+            : this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.4)
+        )
+        .width(this.ds.getSize(8))
+        .height(this.ds.getSize(2.5))
+        .onClick(() => {
+          if (this.timeDownState.started) {
+            this.timeDownState.stop();
+          } else {
+            if (this.selectedTime > 0) {
+              this.timeDownState.start(this.selectedTime);
+            }
+            this.selectedTime = 0;
+          }
+        })
 
       Row() {
         // Placeholder for space control
@@ -243,11 +317,5 @@ export struct CoreflamesPage {
         return isNaN(num) ? item : (vp2px(num)).toString();
       })
       .join(' ');
-  }
-
-  private timeDownText(): string {
-    const minutes = Math.floor(this.timeDown / 60);
-    const seconds = this.timeDown % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 }

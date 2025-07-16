@@ -10,6 +10,9 @@ import { ConfigurationConstant } from '@kit.AbilityKit';
 @Component
 struct Index {
   @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointTypeEnum.MD;
+  @StorageProp('currentColorMode') ccm: ConfigurationConstant.ColorMode =
+    ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  @Provide('DesignSystem') ds: DesignSystem = new DesignSystem();
   @State currentIndex: number = 0;
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();

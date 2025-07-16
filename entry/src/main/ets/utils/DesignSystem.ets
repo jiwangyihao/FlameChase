@@ -17,6 +17,10 @@ interface ColorHSL {
   a: number
 }
 
+export enum Design {
+  DefaultVariation = 600, // Default light variation
+}
+
 export class DesignSystem {
   private context: Context | undefined;
 
