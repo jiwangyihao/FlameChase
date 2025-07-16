@@ -1,10 +1,23 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "signing/default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001AD0D1F6087495C2D98E8153CC02BBDB4940F41DBBDB23351F9BBA616235B8C3B3392D0A68CECB",
+          "profile": "signing/default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "signing/default_FlameChase_1dl1MUY2t8CogZwLQU9idCvbK4CJWXWkJO3cqCAq3bw=.p12",
+          "storePassword": "0000001A572A0E0C43E8A5395C2B36E9F43CB4795E2B22B07CFAFBA4EB75B14129E6FD6505AF0A00D0D2"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
         "targetSdkVersion": "5.1.0(18)",
         "compatibleSdkVersion": "5.0.5(17)",
         "runtimeOS": "HarmonyOS",
