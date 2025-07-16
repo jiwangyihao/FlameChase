@@ -10,9 +10,9 @@ import { SchedulePage } from './SchedulePage';
 struct Index {
   @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointTypeEnum.MD;
   @State currentIndex: number = 0;
+  @Provide('DesignSystem') ds: DesignSystem = new DesignSystem();
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
-  private ds: DesignSystem = new DesignSystem();
 
   aboutToAppear() {
     this.breakpointSystem.register();
@@ -27,8 +27,8 @@ struct Index {
   tabBarBuilder(title: Resource, targetIndex: number, icon: Resource) {
     Column() {
       Image(icon)
-        .width(24)
-        .height(24)
+        .width(this.ds.getSize(2))
+        .height(this.ds.getSize(2))
         .fillColor(
           this.currentIndex === targetIndex
             ? this.ds.getColor('primary')
@@ -36,14 +36,14 @@ struct Index {
         )
       Text(title)
         .fontFamily('HarmonyHeiTi-Medium')
-        .fontSize(10)
+        .fontSize(this.ds.getSize(1))
         .fontColor(
           this.currentIndex === targetIndex
             ? this.ds.getColor('primary')
             : this.ds.getColor('surface', 900, 0.6))
         .textAlign(TextAlign.Center)
-        .lineHeight(14)
-        .fontWeight(500)
+        .lineHeight(this.ds.getSize(1.2))
+        .fontWeight(FontWeight.Bold)
     }
     .width('100%')
     .height('100%')
@@ -63,21 +63,37 @@ struct Index {
       TabContent() {
         CoreflamesPage()
       }
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(1)
+      })
       .tabBar(this.tabBarBuilder($r('app.string.Coreflames'), 0, $r("app.media.mdi__flame")))
 
       TabContent() {
         SchedulePage()
       }
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(1)
+      })
       .tabBar(this.tabBarBuilder($r('app.string.Schedule'), 1, $r("app.media.mdi__invoice_text_scheduled")))
 
       TabContent() {
         AwardsPage()
       }
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(1)
+      })
       .tabBar(this.tabBarBuilder($r('app.string.Awards'), 2, $r("app.media.streamline_block__other_ui_award")))
 
       TabContent() {
         ChroniclePage()
       }
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(1)
+      })
       .tabBar(this.tabBarBuilder($r('app.string.Chronicle'), 3, $r("app.media.mdi__scroll_text")))
     }
     .scrollable(false)
@@ -86,7 +102,11 @@ struct Index {
       strokeWidth: 0.5,
       color: this.ds.getColor('surface', 900, 0.2)
     })
-    .padding({ top: this.ds.getSize(2), bottom: this.ds.getSize(1.5) })
+    .padding({
+      top: this.ds.getSize(2),
+      bottom: this.ds.getSize(1.5)
+    })
     .backgroundColor(this.ds.getColor('surface', 20))
+    .barHeight(this.ds.getSize(4))
   }
 }

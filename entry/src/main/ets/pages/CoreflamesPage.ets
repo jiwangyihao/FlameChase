@@ -1,22 +1,20 @@
+import { DesignSystem } from '../utils/DesignSystem';
+
 @Component
 export struct CoreflamesPage {
-  @State message: string = 'CoreflamesPage';
+  @Consume('DesignSystem') ds: DesignSystem;
 
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('CoreflamesPageHelloWorld')
-        .fontSize($r('app.float.page_text_font_size'))
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
-        .onClick(() => {
-          this.message = 'Welcome';
-        })
+    Column() {
+      Text($r('app.string.Coreflames'))
+        .fontSize(this.ds.getSize(1.5))
+        .textAlign(TextAlign.Start)
+        .lineHeight(this.ds.getSize(2))
+        .fontWeight(FontWeight.Bolder)
+        .width('100%')
     }
     .height('100%')
     .width('100%')
+    .alignItems(HorizontalAlign.Start)
   }
 }
