@@ -4,13 +4,13 @@ import { AwardsPage } from './AwardsPage';
 import { ChroniclePage } from './ChroniclePage';
 import { CoreflamesPage } from './CoreflamesPage';
 import { SchedulePage } from './SchedulePage';
+import { ConfigurationConstant } from '@kit.AbilityKit';
 
 @Entry
 @Component
 struct Index {
   @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointTypeEnum.MD;
   @State currentIndex: number = 0;
-  @Provide('DesignSystem') ds: DesignSystem = new DesignSystem();
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
 
@@ -31,16 +31,16 @@ struct Index {
         .height(this.ds.getSize(2))
         .fillColor(
           this.currentIndex === targetIndex
-            ? this.ds.getColor('primary')
-            : this.ds.getColor('surface', 900, 0.6)
+            ? this.ds.getColor(this.ccm, 'primary')
+            : this.ds.getColor(this.ccm, 'surface', 900, 0.6)
         )
       Text(title)
         .fontFamily('HarmonyHeiTi-Medium')
         .fontSize(this.ds.getSize(1))
         .fontColor(
           this.currentIndex === targetIndex
-            ? this.ds.getColor('primary')
-            : this.ds.getColor('surface', 900, 0.6))
+            ? this.ds.getColor(this.ccm, 'primary')
+            : this.ds.getColor(this.ccm, 'surface', 900, 0.6))
         .textAlign(TextAlign.Center)
         .lineHeight(this.ds.getSize(1.2))
         .fontWeight(FontWeight.Bold)
@@ -100,13 +100,13 @@ struct Index {
     .vertical(this.currentBreakpoint === BreakpointTypeEnum.LG ? true : false)
     .divider({
       strokeWidth: 0.5,
-      color: this.ds.getColor('surface', 900, 0.2)
+      color: this.ds.getColor(this.ccm, 'surface', 900, 0.2)
     })
     .padding({
       top: this.ds.getSize(2),
       bottom: this.ds.getSize(1.5)
     })
-    .backgroundColor(this.ds.getColor('surface', 20))
+    .backgroundColor(this.ds.getColor(this.ccm, 'surface', 20))
     .barHeight(this.ds.getSize(4))
   }
 }

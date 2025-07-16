@@ -9,6 +9,7 @@ const DOMAIN = 0x0000;
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+    AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
   }
 
   onDestroy(): void {
@@ -29,9 +30,9 @@ export default class EntryAbility extends UIAbility {
       ds.register(this.context)
       ThemeControl.setDefaultTheme({
         colors: {
-          brand: ds.getColor('primary'),
-          fontPrimary: ds.getColor('surface', 900),
-          backgroundPrimary: ds.getColor('surface', 25),
+          brand: ds.getColor(0, 'primary'),
+          fontPrimary: ds.getColor(0, 'surface', 900),
+          backgroundPrimary: ds.getColor(0, 'surface', 25),
         }
       });
       hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');

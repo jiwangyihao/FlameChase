@@ -1,3 +1,5 @@
+import { resourceManager } from '@kit.LocalizationKit';
+
 /**
  * Design system utility for managing colors and their variations.
  */
@@ -161,13 +163,19 @@ export class DesignSystem {
    * @param variation Lightness value (0-1000), where 0 is white and 1000 is black.
    * @returns Color with applied light variation.
    */
-  getColor(resourceStr: string, variation: number = 600, alpha: number = 1): string | Resource {
+  getColor(_darkHint: number, resourceStr: string, variation: number = 600, alpha: number = 1): string | Resource {
     if (this.context === undefined) {
       throw new Error('DesignSystem context is not registered. Call register() first.');
     }
 
     if (variation < 0 || variation > 1000) {
       throw new Error('Light value must be between 0 and 1000');
+    }
+
+    if (this.context.resourceManager.getConfigurationSync().colorMode ===
+    resourceManager.ColorMode.DARK) {
+      // If the color mode is dark, we invert the lightness variation
+      variation = 1000 - variation;
     }
 
     // Convert resource color to RGB
