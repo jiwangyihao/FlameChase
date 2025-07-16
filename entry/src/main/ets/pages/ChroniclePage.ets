@@ -1,4 +1,3 @@
-@Entry
 @Component
 export struct ChroniclePage {
   @State message: string = 'ChroniclePage';

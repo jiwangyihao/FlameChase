@@ -1,9 +1,5 @@
 {
   "src": [
-    "pages/Index",
-    "pages/CoreflamesPage",
-    "pages/SchedulePage",
-    "pages/AwardsPage",
-    "pages/ChroniclePage"
+    "pages/Index"
   ]
 }

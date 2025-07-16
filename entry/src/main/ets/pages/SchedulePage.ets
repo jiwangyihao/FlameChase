@@ -1,4 +1,3 @@
-@Entry
 @Component
 export struct SchedulePage {
   @State message: string = 'SchedulePage';

@@ -1,4 +1,3 @@
-@Entry
 @Component
 export struct CoreflamesPage {
   @State message: string = 'CoreflamesPage';
