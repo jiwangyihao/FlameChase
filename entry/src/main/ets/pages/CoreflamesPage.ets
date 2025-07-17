@@ -15,22 +15,56 @@ function progressStrokeDashOffset(progress: number) {
   .strokeDashOffset((30 - 240 * (progress % 1)) * Math.PI) // 调用系统属性接口，逐帧回调函数每帧修改可动画属性的值，实现逐帧布局的效果。
 }
 
-
-function parseScaleProgress(progress: number): number {
+function parseScaleProgress(progress: number, scale: number): number {
   progress = (progress + 0.25) % 1;
   const ease = createCubicBezier(0.25, 0.1, 0.25, 1.0)
   if (progress < 0.5) {
-    return (0.8 + 0.2 * ease(progress * 2));
+    return (0.8 + 0.2 * ease(progress * 2) / scale);
   } else {
-    return (0.8 + 0.2 * (1 - ease((progress - 0.5) * 2)));
+    return (0.8 + 0.2 * (1 - ease((progress - 0.5) * 2)) / scale);
+  }
+}
+
+class ProgressScaleParam implements AnimatableArithmetic<ProgressScaleParam> {
+  progress: number;
+  scale: number;
+
+  constructor(progress: number, scale: number) {
+    this.progress = progress;
+    this.scale = scale;
+  }
+
+  plus(rhs: ProgressScaleParam): ProgressScaleParam {
+    return new ProgressScaleParam(
+      this.progress + rhs.progress,
+      this.scale + rhs.scale
+    );
+  }
+
+  subtract(rhs: ProgressScaleParam): ProgressScaleParam {
+    return new ProgressScaleParam(
+      this.progress - rhs.progress,
+      this.scale - rhs.scale
+    );
+  }
+
+  multiply(scale: number): ProgressScaleParam {
+    return new ProgressScaleParam(
+      this.progress * scale,
+      this.scale * scale
+    );
+  }
+
+  equals(rhs: ProgressScaleParam): boolean {
+    return this.progress === rhs.progress && this.scale === rhs.scale;
   }
 }
 
 @AnimatableExtend(Shape)
-function progressScale(progress: number) {
+function progressScale(param: ProgressScaleParam) {
   .scale({
-    x: parseScaleProgress(progress),
-    y: parseScaleProgress(progress)
+    x: parseScaleProgress(param.progress, param.scale) * param.scale,
+    y: parseScaleProgress(param.progress, param.scale) * param.scale
   })
 }
 
@@ -52,11 +86,22 @@ export struct CoreflamesPage {
   @Local ringRotate: number = 0;
   @Local selectedTime: number = 0;
   @Local showDialog: boolean = false;
+  @Local coreflameGroupsCompletedScale: number[] = this.coreflameGroupsCompleted.map(
+    (completed: boolean) => completed ? 1.75 : 1
+  );
+  @Local coreflameGroupsCompletedFlag: boolean[] = this.coreflameGroupsCompleted;
   private ringPath: string =
     'M 104.3368 1.0266 A 120 120 0 0 0 9.1344 165.922 ' +
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
       'M 230.8655 165.922 A 120 120 0 0 0 135.6631 1.0266';
   private startSelectedTime: number = 0;
+
+  @Computed
+  get coreflameGroupsCompleted(): boolean[] {
+    return this.coreflameGroups.map((group: CoreflameGroup) => {
+      return group.coreflames.every((coreflame: Coreflame) => coreflame.recycledTime > 0);
+    });
+  }
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -77,24 +122,53 @@ export struct CoreflamesPage {
       }
     ]);
 
-    this.getUIContext()?.keyframeAnimateTo({
-      iterations: -1,
-      delay: -250
-    }, [
-      {
-        duration: 10000,
-        curve: Curve.Linear,
-        event: () => {
-          this.scaleProgress = 1;
-        }
-      },
-      {
-        duration: 0,
-        event: () => {
+    const scaleAnimation = () => {
+      if (this.scaleProgress === 1) {
+        this.getUIContext()?.animateTo({
+          iterations: 1,
+          duration: 0,
+          onFinish: () => {
+            scaleAnimation();
+          }
+        }, () => {
           this.scaleProgress = 0;
-        }
+        })
+      } else {
+        this.getUIContext()?.animateTo({
+          iterations: 1,
+          duration: 5000,
+          curve: Curve.Linear,
+          onFinish: () => {
+            scaleAnimation();
+          }
+        }, () => {
+          this.scaleProgress = this.scaleProgress + 0.5;
+          this.coreflameGroupsCompletedFlag = this.coreflameGroupsCompleted;
+        })
       }
-    ]);
+      // this.getUIContext()?.keyframeAnimateTo({
+      //   iterations: 1,
+      //   delay: -250
+      // }, [
+      //   {
+      //     duration: 1000,
+      //     curve: Curve.Linear,
+      //     event: () => {
+      //       this.scaleProgress = 1;
+      //       this.coreflameGroupsCompleted.forEach((completed: boolean, index: number) => {
+      //         this.coreflameGroupsCompletedScale[index] = completed ? 1.75 : 1;
+      //       });
+      //     }
+      //   },
+      //   {
+      //     duration: 0,
+      //     event: () => {
+      //       this.scaleProgress = 0;
+      //     }
+      //   }
+      // ]);
+    }
+    scaleAnimation()
 
     this.getUIContext()?.keyframeAnimateTo({
       iterations: -1
@@ -432,10 +506,18 @@ export struct CoreflamesPage {
           Shape() {
             Path()
               .commands(this.parsePath(this.ringPath))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 200, 0.25))
+              .stroke(
+                this.coreflameGroupsCompleted[index]
+                  ? this.ds.getColor(this.ccm, 'primary', 200, 0.25)
+                  : this.ds.getColor(this.ccm, 'surface', 200, 0.25)
+              )
             Path()
               .commands(this.parsePath(this.ringPath))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 900))
+              .stroke(
+                this.coreflameGroupsCompleted[index]
+                  ? this.ds.getColor(this.ccm, 'primary')
+                  : this.ds.getColor(this.ccm, 'surface', 900)
+              )
               .strokeDashArray([10, 240 * Math.PI])
               .progressStrokeDashOffset((this.strokeDashOffsetProgress) * 4 + 0.25 * index)
             Path()
@@ -497,10 +579,15 @@ export struct CoreflamesPage {
           .height('100%')
           .strokeWidth(2)
           .fillOpacity(0)
-          .progressScale(this.scaleProgress + 0.25 * index)
           .rotate({
             angle: this.ringRotate + 90 * index
           })
+          .progressScale(
+            new ProgressScaleParam(
+              this.scaleProgress + 0.25 * index,
+              this.coreflameGroupsCompletedFlag[index] ? 1.75 : 1
+            )
+          )
         }, (item: number) => item.toString())
 
         Text(
@@ -529,7 +616,7 @@ export struct CoreflamesPage {
                 Math.min(
                   MAX_TIME_DOWN,
                   this.startSelectedTime + Math.floor(
-                    (event.offsetX - event.offsetY)
+                    (event.offsetX - event.offsetY) / 3
                   )
                 )
               );
@@ -598,6 +685,40 @@ export struct CoreflamesPage {
     .justifyContent(FlexAlign.SpaceBetween)
   }
 
+  // @Monitor("coreflameGroupsCompleted")
+  // onCoreflamesChange(monitor: IMonitor) {
+  //   monitor.dirty.forEach((path: string) => {
+  //     console.info(`${path} changed from ${monitor.value(path)?.before} to ${monitor.value(path)?.now}`);
+  //     this.coreflameGroupsCompleted.forEach((completed: boolean, index: number) => {
+  //       if ((monitor.value(path)?.before as boolean[])[index] !== completed) {
+  //         // this.getUIContext()?.animateTo({
+  //         //   iterations: 1,
+  //         //   duration: 2000,
+  //         // }, () => {
+  //         //   this.coreflameGroupsCompletedScale[index] = 1.75;
+  //         // });
+  //         this.getUIContext()?.keyframeAnimateTo({
+  //           iterations: 1,
+  //         }, [
+  //           {
+  //             duration: 0,
+  //             event: () => {
+  //               this.coreflameGroupsCompletedScale[index] = 1;
+  //             }
+  //           },
+  //           {
+  //             duration: 1000,
+  //             curve: Curve.Linear,
+  //             event: () => {
+  //               this.coreflameGroupsCompletedScale[index] = 1.75;
+  //             }
+  //           }
+  //         ]);
+  //       }
+  //     });
+  //   });
+  // }
+
   private parsePath(pathInVp: string) {
     return pathInVp.split(' ')
       .map((item) => {
@@ -614,20 +735,14 @@ export struct CoreflamesPage {
       }
       if (task.bindCoreflame) {
         task.bindCoreflame.recycledTime = new Date().getTime();
-        this.getUIContext().getPromptAction().openCustomDialog({
-          builder: () => {
-            this.customDialogComponent(task.bindCoreflame)
-          },
-          isModal: true,
-          showInSubWindow: false,
-          maskColor: Color.Yellow,
-          maskRect: {
-            x: 20,
-            y: 20,
-            width: '90%',
-            height: '90%'
-          },
-        })
+        // this.getUIContext().getPromptAction().openCustomDialog({
+        //   builder: () => {
+        //     this.customDialogComponent(task.bindCoreflame)
+        //   },
+        //   isModal: true,
+        //   showInSubWindow: false,
+        //
+        // })
       }
       this.tasks.addTask(task);
     }).catch((reason: string) => {
@@ -639,13 +754,6 @@ export struct CoreflamesPage {
         },
         isModal: true,
         showInSubWindow: false,
-        maskColor: Color.Gray,
-        maskRect: {
-          x: 20,
-          y: 20,
-          width: '90%',
-          height: '90%'
-        },
       })
     });
     this.selectedTime = 0;
