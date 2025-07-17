@@ -47,6 +47,46 @@
     {
       "name": "Ponder",
       "value": "Ponder"
+    },
+    {
+      "name": "recycledCoreflames",
+      "value": "recycledCoreflames"
+    },
+    {
+      "name": "CaughtInTheDarkTide",
+      "value": "CaughtInTheDarkTide"
+    },
+    {
+      "name": "ChooseToChaseFlame",
+      "value": "ChooseToChaseFlame"
+    },
+    {
+      "name": "SelectPlanCategory",
+      "value": "SelectPlanCategory"
+    },
+    {
+      "name": "PlanName",
+      "value": "PlanName"
+    },
+    {
+      "name": "InputPlanName",
+      "value": "InputPlanName"
+    },
+    {
+      "name": "PlanDescription",
+      "value": "PlanDescription"
+    },
+    {
+      "name": "InputPlanDescription",
+      "value": "InputPlanDescription"
+    },
+    {
+      "name": "PlanDuration",
+      "value": "PlanDuration"
+    },
+    {
+      "name": "NoPlanYetCreateOneNow",
+      "value": "NoPlanYetCreateOneNow"
     }
   ]
 }

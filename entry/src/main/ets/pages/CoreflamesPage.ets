@@ -117,6 +117,18 @@ export struct CoreflamesPage {
         .lineHeight(this.ds.getSize(2))
         .fontWeight(FontWeight.Bolder)
         .width('100%')
+    Column() {
+      Row() {
+        Text($r('app.string.recycledCoreflames'))
+          .fontSize(this.ds.getSize(1.5))
+          .lineHeight(this.ds.getSize(2))
+          .fontWeight(FontWeight.Bolder)
+          .width('100%')
+      }
+      Progress({value:this.coreflameGroups.recycledCoreflames.length, total:12, type:ProgressType.Linear})
+        .color(this.ds.getColor(this.ccm, 'primary'))
+        .backgroundColor(this.ds.getColor(this.ccm, 'surface', 50))
+    }
 
       Stack() {
         // Core time-down component
@@ -308,7 +320,7 @@ export struct CoreflamesPage {
       )
 
       Button(
-        this.timeDownState.started ? '堕入黑潮' : '选择逐火',
+        this.timeDownState.started ? $r('app.string.CaughtInTheDarkTide') : $r('app.string.ChooseToChaseFlame'),
         { type: ButtonType.Normal, stateEffect: true }
       )
         .linearGradient({
