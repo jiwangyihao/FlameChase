@@ -12,6 +12,7 @@ export struct SchedulePage {
         .lineHeight(this.ds.getSize(2))
         .fontWeight(FontWeight.Bolder)
         .width('100%')
+
     }
     .height('100%')
     .width('100%')
