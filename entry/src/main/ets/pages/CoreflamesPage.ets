@@ -86,10 +86,8 @@ export struct CoreflamesPage {
   @Local ringRotate: number = 0;
   @Local selectedTime: number = 0;
   @Local showDialog: boolean = false;
-  @Local coreflameGroupsCompletedScale: number[] = this.coreflameGroupsCompleted.map(
-    (completed: boolean) => completed ? 1.75 : 1
-  );
   @Local coreflameGroupsCompletedFlag: boolean[] = this.coreflameGroupsCompleted;
+  @Local showFinishProgress: boolean = false;
   private ringPath: string =
     'M 104.3368 1.0266 A 120 120 0 0 0 9.1344 165.922 ' +
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
@@ -400,7 +398,11 @@ export struct CoreflamesPage {
         .fontWeight(FontWeight.Bolder)
         .width('100%')
       Column() {
-        Progress({ value: this.coreflameGroups.recycledCoreflames.length, total: 12, type: ProgressType.Linear })
+        Progress({
+          value: this.coreflameGroups.recycledCoreflames.length,
+          total: this.coreflameGroups.flatMap(group => group.coreflames).length,
+          type: ProgressType.Linear
+        })
           .color(this.ds.getColor(this.ccm, 'primary'))
           .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
           .style({
@@ -441,22 +443,28 @@ export struct CoreflamesPage {
           })
 
         Progress({
-          value: 0,
-          total: this.timeDownState.started
-            ? this.timeDownState.total * 1.5
-            : MAX_TIME_DOWN * 1.5,
+          value: this.showFinishProgress ? MAX_TIME_DOWN : 0,
+          total: MAX_TIME_DOWN * 1.5,
           type: ProgressType.Ring
         })
           .width('85%')
           .height('85%')
           .color(new LinearGradient([
             {
-              color: this.ds.getColor(this.ccm, 'primary'),
-              offset: 0.5
+              color: this.ds.getColor(
+                this.ccm,
+                'primary',
+                500
+              ),
+              offset: 0
             },
             {
-              color: this.ds.getColor(this.ccm, 'primary', 500),
-              offset: 1
+              color: this.ds.getColor(
+                this.ccm,
+                'primary',
+                600
+              ),
+              offset: 0.5
             }
           ]))
           .style({
@@ -610,7 +618,8 @@ export struct CoreflamesPage {
             }
           })
           .onActionUpdate((event: GestureEvent | undefined) => {
-            if (event) {
+            if (event && !this.timeDownState.started) {
+              this.showFinishProgress = false;
               this.selectedTime = Math.max(
                 0,
                 Math.min(
@@ -685,40 +694,6 @@ export struct CoreflamesPage {
     .justifyContent(FlexAlign.SpaceBetween)
   }
 
-  // @Monitor("coreflameGroupsCompleted")
-  // onCoreflamesChange(monitor: IMonitor) {
-  //   monitor.dirty.forEach((path: string) => {
-  //     console.info(`${path} changed from ${monitor.value(path)?.before} to ${monitor.value(path)?.now}`);
-  //     this.coreflameGroupsCompleted.forEach((completed: boolean, index: number) => {
-  //       if ((monitor.value(path)?.before as boolean[])[index] !== completed) {
-  //         // this.getUIContext()?.animateTo({
-  //         //   iterations: 1,
-  //         //   duration: 2000,
-  //         // }, () => {
-  //         //   this.coreflameGroupsCompletedScale[index] = 1.75;
-  //         // });
-  //         this.getUIContext()?.keyframeAnimateTo({
-  //           iterations: 1,
-  //         }, [
-  //           {
-  //             duration: 0,
-  //             event: () => {
-  //               this.coreflameGroupsCompletedScale[index] = 1;
-  //             }
-  //           },
-  //           {
-  //             duration: 1000,
-  //             curve: Curve.Linear,
-  //             event: () => {
-  //               this.coreflameGroupsCompletedScale[index] = 1.75;
-  //             }
-  //           }
-  //         ]);
-  //       }
-  //     });
-  //   });
-  // }
-
   private parsePath(pathInVp: string) {
     return pathInVp.split(' ')
       .map((item) => {
@@ -730,9 +705,11 @@ export struct CoreflamesPage {
 
   private startTask(task: Task) {
     this.timeDownState.start(this.selectedTime).then(() => {
+      this.showFinishProgress = true;
       if (task.bindSchedule) {
         task.bindSchedule.progress += task.total;
       }
+
       if (task.bindCoreflame) {
         task.bindCoreflame.recycledTime = new Date().getTime();
         // this.getUIContext().getPromptAction().openCustomDialog({
