@@ -4,6 +4,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { Schedule, ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
 import { ScheduleView } from '../view/ScheduleView';
+import { Header } from '../view/Header';
 
 
 @ComponentV2
@@ -18,6 +19,8 @@ export struct SchedulePage {
   @Local scheduleName: string = "";
   @Local scheduleDescription: string = "";
   @Local scheduleDuration: number = 0;
+  @Event openSetting: () => void = () => {
+  };
 
   @Builder
   dialogBuilder() {
@@ -196,12 +199,12 @@ export struct SchedulePage {
 
   build() {
     Column() {
-      Text($r('app.string.Schedule'))
-        .fontSize(this.ds.getSize(1.5))
-        .textAlign(TextAlign.Start)
-        .lineHeight(this.ds.getSize(2))
-        .fontWeight(FontWeight.Bolder)
-        .width('100%')
+      Header({
+        title: $r('app.string.Schedule'),
+        openSetting: () => {
+          this.openSetting();
+        }
+      })
 
       Stack() {
         if (this.schedules.length === 0) {

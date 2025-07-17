@@ -1,17 +1,20 @@
 import { DesignSystem } from '../utils/DesignSystem';
+import { Header } from '../view/Header';
 
 @ComponentV2
 export struct ChroniclePage {
   @Consumer('DesignSystem') ds: DesignSystem = new DesignSystem();
+  @Event openSetting: () => void = () => {
+  };
 
   build() {
     Column() {
-      Text($r('app.string.Chronicle'))
-        .fontSize(this.ds.getSize(1.5))
-        .textAlign(TextAlign.Start)
-        .lineHeight(this.ds.getSize(2))
-        .fontWeight(FontWeight.Bolder)
-        .width('100%')
+      Header({
+        title: $r('app.string.Chronicle'),
+        openSetting: () => {
+          this.openSetting();
+        }
+      })
     }
     .height('100%')
     .width('100%')

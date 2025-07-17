@@ -3,6 +3,7 @@ import { DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MissionArr, MissionInfo } from '../model/Mission';
+import { Header } from '../view/Header';
 
 @ComponentV2
 export struct AwardsPage {
@@ -22,6 +23,8 @@ export struct AwardsPage {
   @Local MissionName: string = "";
   @Local MissionDetails: string = "";
   @Local MissionRequest: number = 0;
+  @Event openSetting: () => void = () => {
+  };
 
   @Builder
   dialogBuilder() {
@@ -149,12 +152,12 @@ export struct AwardsPage {
   build() {
     /*Navigation(this.pathStack) {*/
     Column() {
-      Text($r('app.string.Awards'))
-        .fontSize(this.ds.getSize(1.5))
-        .textAlign(TextAlign.Start)
-        .lineHeight(this.ds.getSize(2))
-        .fontWeight(FontWeight.Bolder)
-        .width('100%')
+      Header({
+        title: $r('app.string.Awards'),
+        openSetting: () => {
+          this.openSetting();
+        }
+      })
       // Row() {
       //   Button("已完成", { type: ButtonType.Normal, stateEffect: false })
       //     .onClick(() => {

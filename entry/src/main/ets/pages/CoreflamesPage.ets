@@ -7,6 +7,7 @@ import { NumberObject } from '../utils/BaseObjects';
 import { AppStorageV2, display, ImmersiveMode, promptAction } from '@kit.ArkUI';
 import { Schedule, ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
 import { Task, TaskList } from '../model/Task';
+import { Header } from '../view/Header';
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
@@ -104,6 +105,9 @@ export struct CoreflamesPage {
       return group.coreflames.every((coreflame: Coreflame) => coreflame.recycledTime > 0);
     });
   }
+
+  @Event openSetting: () => void = () => {
+  };
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -388,12 +392,13 @@ export struct CoreflamesPage {
 
   build() {
     Column() {
-      Text($r('app.string.Coreflames'))
-        .fontSize(this.ds.getSize(1.5))
-        .textAlign(TextAlign.Start)
-        .lineHeight(this.ds.getSize(2))
-        .fontWeight(FontWeight.Bolder)
-        .width('100%')
+      Header({
+        title: $r('app.string.Coreflames'),
+        openSetting: () => {
+          this.openSetting();
+        }
+      })
+
       Column() {
         Progress({
           value: this.coreflameGroups.recycledCoreflames.length,
