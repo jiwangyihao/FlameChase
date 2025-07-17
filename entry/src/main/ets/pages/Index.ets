@@ -5,9 +5,15 @@ import { ChroniclePage } from './ChroniclePage';
 import { CoreflamesPage } from './CoreflamesPage';
 import { SchedulePage } from './SchedulePage';
 import { ConfigurationConstant } from '@kit.AbilityKit';
-import { AppStorageV2 } from '@kit.ArkUI';
+import {
+  AppStorageV2,
+  ColorMetrics,
+  LengthMetrics,
+  SegmentButtonV2Item,
+  SegmentButtonV2Items,
+  TabSegmentButtonV2
+} from '@kit.ArkUI';
 import { NumberObject, StringObject } from '../utils/BaseObjects';
-import { ScheduleCategory, scheduleCategoryIcons } from '../model/Schedule';
 
 @Entry
 @ComponentV2
@@ -23,8 +29,17 @@ struct Index {
     () => new NumberObject(0))!;
   @Local bottomRectHeight: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'bottomRectHeight',
     () => new NumberObject(0))!;
+  @Local primaryHue: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'primaryHue',
+    () => new NumberObject(-1))!;
+  @Local primarySat: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'primarySat',
+    () => new NumberObject(-1))!;
+  @Local surfaceHue: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'surfaceHue',
+    () => new NumberObject(-1))!;
+  @Local surfaceSat: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'surfaceSat',
+    () => new NumberObject(-1))!;
   @Local currentIndex: number = 0;
   @Local showSetting: boolean = false;
+  @Local darkModeIndex: number = 0;
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
 
@@ -70,12 +85,12 @@ struct Index {
   }
 
   @Builder
-  startPanelBuilder() {
+  settingsPanelBuilder() {
     Column({ space: this.ds.getSize(0.25) }) {
-      Text("- 选择类别快速开始 - ")
+      Text("显示设置")
         .fontSize(this.ds.getSize(1))
         .fontWeight(FontWeight.Bold)
-        .textAlign(TextAlign.Center)
+        .textAlign(TextAlign.Start)
         .fontColor(
           this.ds.getColor(this.ccm, 'surface', 900, 0.6)
         )
@@ -83,47 +98,296 @@ struct Index {
         .margin({
           bottom: this.ds.getSize(0.25),
         })
+
+
       Row() {
-        ForEach([
-          ScheduleCategory.CHAOS,
-          ScheduleCategory.STUDY,
-          ScheduleCategory.WORK,
-          ScheduleCategory.EXERCISE,
-          ScheduleCategory.PONDER
-        ], (category: ScheduleCategory) => {
-          Column({ space: this.ds.getSize(0.5) }) {
-            Image(scheduleCategoryIcons.get(category))
-              .width(this.ds.getSize(1.5))
-              .height(this.ds.getSize(1.5))
-              .fillColor(
-                this.ds.getColor(this.ccm, 'surface', 800, 0.6)
-              )
-            Text($r(`app.string.${category}`))
+        Image($r('app.media.mdi__moon_and_stars'))
+          .width(this.ds.getSize(1.5))
+          .height(this.ds.getSize(1.5))
+          .fillColor(
+            this.ds.getColor(this.ccm, 'surface', 900)
+          )
+        Column({ space: this.ds.getSize(0.25) }) {
+          Row() {
+            Text("深色模式")
               .fontSize(this.ds.getSize(1))
               .fontWeight(FontWeight.Bold)
-              .fontColor(
-                this.ds.getColor(this.ccm, 'surface', 800, 0.6)
-              )
           }
-          .backgroundColor(
-            this.ds.getColor(this.ccm, 'surface', 100, 0.2)
-          )
-          .borderColor(
-            this.ds.getColor(this.ccm, 'surface', 800, 0.3)
-          )
-          .borderWidth(this.ds.getSize(0.15))
-          .width(this.ds.getSize(4))
-          .height(this.ds.getSize(5))
-          .borderRadius(this.ds.getSize(1))
-          .justifyContent(FlexAlign.Center)
-          .onClick(() => {
-          })
+          .justifyContent(FlexAlign.SpaceBetween)
+
+          Text("深色模式")
+            .fontSize(this.ds.getSize(0.8))
+            .fontWeight(FontWeight.Medium)
+        }
+        .alignItems(HorizontalAlign.Start)
+        .margin({ left: this.ds.getSize(0.5) })
+
+        Blank()
+
+        TabSegmentButtonV2({
+          items: new SegmentButtonV2Items(
+            [
+              new SegmentButtonV2Item({ text: '跟随' }),
+              new SegmentButtonV2Item({ text: '浅色' }),
+              new SegmentButtonV2Item({ text: '深色' }),
+            ]
+          ),
+          selectedIndex: this.darkModeIndex,
+          buttonBackgroundColor: ColorMetrics.numeric(
+            parseInt(
+              (this.ds.getColor(this.ccm, 'surface', 100, 0.75) as string)
+                .replace('#', ''),
+              16)
+          ),
+          itemSelectedBackgroundColor: ColorMetrics.numeric(
+            parseInt(
+              (this.ds.getColor(this.ccm, 'surface', 0, 0.5) as string)
+                .replace('#', ''),
+              16)
+          ),
+          itemPadding: {
+            start: LengthMetrics.vp(0),
+            end: LengthMetrics.vp(0)
+          },
+          $selectedIndex: (index: number) => {
+            this.darkModeIndex = index;
+            this.getUIContext()
+              .getHostContext()
+            ?.getApplicationContext()
+              .setColorMode(this.darkModeIndex === 0
+                ? ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
+                : this.darkModeIndex === 1
+                  ? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+                  : ConfigurationConstant.ColorMode.COLOR_MODE_DARK);
+          }
         })
+          .width(this.ds.getSize(10))
       }
+      .backgroundColor(
+        this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+      )
+      .borderColor(
+        this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+      )
+      .borderWidth(this.ds.getSize(0.15))
       .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
+      .height(this.ds.getSize(4))
+      .borderRadius(this.ds.getSize(1))
+      .justifyContent(FlexAlign.Center)
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(0.5),
+      })
       .margin({
-        bottom: this.ds.getSize(1),
+        bottom: this.ds.getSize(0.5),
+      })
+
+      Column() {
+        Row() {
+          Image($r('app.media.mdi__moon_and_stars'))
+            .width(this.ds.getSize(1.5))
+            .height(this.ds.getSize(1.5))
+            .fillColor(
+              this.ds.getColor(this.ccm, 'surface', 900)
+            )
+          Column({ space: this.ds.getSize(0.25) }) {
+            Row() {
+              Text("设置主题色")
+                .fontSize(this.ds.getSize(1))
+                .fontWeight(FontWeight.Bold)
+            }
+            .justifyContent(FlexAlign.SpaceBetween)
+
+            Text("拖动下方滑块选择主题色")
+              .fontSize(this.ds.getSize(0.8))
+              .fontWeight(FontWeight.Medium)
+          }
+          .alignItems(HorizontalAlign.Start)
+          .margin({ left: this.ds.getSize(0.5) })
+        }
+        .justifyContent(FlexAlign.Start)
+        .height(this.ds.getSize(4))
+        .width('100%')
+
+        Slider({
+          value: this.primaryHue.value > 0 ? this.primaryHue.value * 1000 : 0,
+          min: -1,
+          max: 1000,
+          style: SliderStyle.InSet
+        })
+          .blockColor(this.ds.getColor(this.ccm, 'primary', 100))
+          .trackColor(new LinearGradient(Array.from<ESObject, ColorStop>({ length: 360 },
+            (_: ESObject, i): ColorStop => {
+              return {
+                color: DesignSystem.rgbToHex(DesignSystem.hslToRgb({
+                  h: i / 360,
+                  s: 1,
+                  l: 0.5,
+                  a: 255
+                })),
+                offset: i / 360
+              }
+            })))
+          .selectedColor(this.ds.getColor(this.ccm, 'primary', 100, 0.8))
+          .showTips(true)
+          .onChange((value: number, mode: SliderChangeMode) => {
+            this.primaryHue.value = value / 1000;
+            this.getUIContext()
+              .getHostContext()
+            ?.getApplicationContext()
+              .setColorMode(this.ccm.value);
+            console.info('value:' + value + 'mode:' + mode.toString());
+          })
+
+        Slider({
+          value: this.primarySat.value > 0 ? this.primarySat.value * 1000 : 1000,
+          min: -1,
+          max: 1000,
+          style: SliderStyle.InSet
+        })
+          .blockColor(this.ds.getColor(this.ccm, 'primary', 100))
+          .trackColor(new LinearGradient(Array.from<ESObject, ColorStop>({ length: 360 },
+            (_: ESObject, i): ColorStop => {
+              return {
+                color: DesignSystem.rgbToHex(DesignSystem.hslToRgb({
+                  h: this.primaryHue.value,
+                  s: i / 360,
+                  l: 0.5,
+                  a: 255
+                })),
+                offset: i / 360
+              }
+            })))
+          .selectedColor(this.ds.getColor(this.ccm, 'primary', 100, 0.8))
+          .showTips(true)
+          .onChange((value: number, mode: SliderChangeMode) => {
+            this.primarySat.value = value / 1000;
+            this.getUIContext()
+              .getHostContext()
+            ?.getApplicationContext()
+              .setColorMode(this.ccm.value);
+            console.info('value:' + value + 'mode:' + mode.toString());
+          })
+      }
+      .backgroundColor(
+        this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+      )
+      .borderColor(
+        this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+      )
+      .borderWidth(this.ds.getSize(0.15))
+      .width('100%')
+      .borderRadius(this.ds.getSize(1))
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(0.5),
+      })
+      .margin({
+        bottom: this.ds.getSize(0.5),
+      })
+
+      Column() {
+        Row() {
+          Image($r('app.media.mdi__moon_and_stars'))
+            .width(this.ds.getSize(1.5))
+            .height(this.ds.getSize(1.5))
+            .fillColor(
+              this.ds.getColor(this.ccm, 'surface', 900)
+            )
+          Column({ space: this.ds.getSize(0.25) }) {
+            Row() {
+              Text("设置背景色")
+                .fontSize(this.ds.getSize(1))
+                .fontWeight(FontWeight.Bold)
+            }
+            .justifyContent(FlexAlign.SpaceBetween)
+
+            Text("拖动下方滑块选择背景色")
+              .fontSize(this.ds.getSize(0.8))
+              .fontWeight(FontWeight.Medium)
+          }
+          .alignItems(HorizontalAlign.Start)
+          .margin({ left: this.ds.getSize(0.5) })
+        }
+        .justifyContent(FlexAlign.Start)
+        .height(this.ds.getSize(4))
+        .width('100%')
+
+        Slider({
+          value: this.surfaceHue.value > 0 ? this.surfaceHue.value * 1000 : 0,
+          min: -1,
+          max: 1000,
+          style: SliderStyle.InSet
+        })
+          .blockColor(this.ds.getColor(this.ccm, 'primary', 100))
+          .trackColor(new LinearGradient(Array.from<ESObject, ColorStop>({ length: 360 },
+            (_: ESObject, i): ColorStop => {
+              return {
+                color: DesignSystem.rgbToHex(DesignSystem.hslToRgb({
+                  h: i / 360,
+                  s: 1,
+                  l: 0.5,
+                  a: 255
+                })),
+                offset: i / 360
+              }
+            })))
+          .selectedColor(this.ds.getColor(this.ccm, 'primary', 100, 0.8))
+          .showTips(true)
+          .onChange((value: number, mode: SliderChangeMode) => {
+            this.surfaceHue.value = value / 1000;
+            this.getUIContext()
+              .getHostContext()
+            ?.getApplicationContext()
+              .setColorMode(this.ccm.value);
+            console.info('value:' + value + 'mode:' + mode.toString());
+          })
+
+        Slider({
+          value: this.surfaceSat.value > 0 ? this.surfaceSat.value * 1000 : 1000,
+          min: -1,
+          max: 1000,
+          style: SliderStyle.InSet
+        })
+          .blockColor(this.ds.getColor(this.ccm, 'primary', 100))
+          .trackColor(new LinearGradient(Array.from<ESObject, ColorStop>({ length: 360 },
+            (_: ESObject, i): ColorStop => {
+              return {
+                color: DesignSystem.rgbToHex(DesignSystem.hslToRgb({
+                  h: this.surfaceHue.value,
+                  s: i / 360,
+                  l: 0.5,
+                  a: 255
+                })),
+                offset: i / 360
+              }
+            })))
+          .selectedColor(this.ds.getColor(this.ccm, 'primary', 100, 0.8))
+          .showTips(true)
+          .onChange((value: number, mode: SliderChangeMode) => {
+            this.surfaceSat.value = value / 1000;
+            this.getUIContext()
+              .getHostContext()
+            ?.getApplicationContext()
+              .setColorMode(this.ccm.value);
+            console.info('value:' + value + 'mode:' + mode.toString());
+          })
+      }
+      .backgroundColor(
+        this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+      )
+      .borderColor(
+        this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+      )
+      .borderWidth(this.ds.getSize(0.15))
+      .width('100%')
+      .borderRadius(this.ds.getSize(1))
+      .padding({
+        left: this.ds.getSize(1),
+        right: this.ds.getSize(0.5),
+      })
+      .margin({
+        bottom: this.ds.getSize(0.5),
       })
     }
     .width('100%')
@@ -187,7 +451,7 @@ struct Index {
     })
     .backgroundColor(this.ds.getColor(this.ccm, 'surface', 30))
     .barHeight(this.ds.getSize(4))
-    .bindSheet($$this.showSetting, this.startPanelBuilder(), {
+    .bindSheet($$this.showSetting, this.settingsPanelBuilder(), {
       backgroundColor: this.ds.getColor(this.ccm, 'surface', 50, 0.2),
       detents: [this.ds.getSize(20), SheetSize.MEDIUM, SheetSize.LARGE],
       blurStyle: BlurStyle.Thick,

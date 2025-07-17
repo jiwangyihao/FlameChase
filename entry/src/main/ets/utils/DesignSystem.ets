@@ -1,5 +1,6 @@
 import { resourceManager } from '@kit.LocalizationKit';
 import { NumberObject } from './BaseObjects';
+import { AppStorageV2 } from '@kit.ArkUI';
 
 /**
  * Design system utility for managing colors and their variations.
@@ -11,7 +12,7 @@ interface ColorRGB {
   a: number
 }
 
-interface ColorHSL {
+export interface ColorHSL {
   h: number; // Hue: 0-1
   s: number; // Saturation: 0-1
   l: number; // Lightness: 0-1
@@ -26,58 +27,12 @@ export class DesignSystem {
   private context: Context | undefined;
 
   /**
-   * Converts an RGB color object to HSL.
-   * Conversion formula adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-   * @param color The RGB color object {r, g, b} with values from 0-255.
-   * @returns The HSL representation {h, s, l} with values from 0-1.
-   */
-  private static rgbToHsl(color: ColorRGB): ColorHSL {
-    let r = color.r;
-    let g = color.g;
-    let b = color.b;
-    r /= 255;
-    g /= 255;
-    b /= 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
-
-    if (max === min) {
-      // achromatic (grayscale)
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      h /= 6;
-    }
-
-    return {
-      h,
-      s,
-      l,
-      a: color.a
-    }; // Include alpha channel
-  }
-
-  /**
    * Converts an HSL color value to RGB.
    * Conversion formula adapted from http://en.wikipedia.org/wiki/HSL_color_space.
    * @param color The HSL color object {h, s, l} with values from 0-1.
    * @returns The RGB representation {r, g, b} with values from 0-255.
    */
-  private static hslToRgb(color: ColorHSL): ColorRGB {
+  static hslToRgb(color: ColorHSL): ColorRGB {
     let h = color.h;
     let s = color.s;
     let l = color.l;
@@ -121,6 +76,69 @@ export class DesignSystem {
   }
 
   /**
+   * Converts an RGB color object to a color resource.
+   */
+  static rgbToHex(color: ColorRGB): string {
+    const toHex = (n: number): string => {
+      // Clamp the value between 0 and 255
+      const clamped = Math.max(0, Math.min(255, n));
+      const hex = clamped.toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+
+    const hexColor = `#${toHex(color.a)}${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`;
+    // This assumes a resource naming convention like 'app.color.ff0000' for red.
+    // You might need to adjust this based on your project's resource structure.
+    return hexColor;
+  }
+
+  /**
+   * Converts an RGB color object to HSL.
+   * Conversion formula adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+   * @param color The RGB color object {r, g, b} with values from 0-255.
+   * @returns The HSL representation {h, s, l} with values from 0-1.
+   */
+  static rgbToHsl(color: ColorRGB): ColorHSL {
+    let r = color.r;
+    let g = color.g;
+    let b = color.b;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+
+    if (max === min) {
+      // achromatic (grayscale)
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h /= 6;
+    }
+
+    return {
+      h,
+      s,
+      l,
+      a: color.a
+    }; // Include alpha channel
+  }
+
+  /**
    * Converts a color resource to an RGB object.
    * Note: This is a simplified implementation for demonstration.
    */
@@ -141,23 +159,6 @@ export class DesignSystem {
     };
   }
 
-  /**
-   * Converts an RGB color object to a color resource.
-   */
-  private static rgbToHex(color: ColorRGB): string {
-    const toHex = (n: number): string => {
-      // Clamp the value between 0 and 255
-      const clamped = Math.max(0, Math.min(255, n));
-      const hex = clamped.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    };
-
-    const hexColor = `#${toHex(color.a)}${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`;
-    // This assumes a resource naming convention like 'app.color.ff0000' for red.
-    // You might need to adjust this based on your project's resource structure.
-    return hexColor;
-  }
-
   register(context: Context | undefined): void {
     this.context = context;
   }
@@ -169,7 +170,7 @@ export class DesignSystem {
    * @returns Color with applied light variation.
    */
   getColor(
-    _darkHint: NumberObject, resourceStr: string, variation: number = 600,
+    darkHint: NumberObject, resourceStr: string, variation: number = 600,
     alpha: number = 1
   ): string | Resource {
     if (this.context === undefined) {
@@ -179,6 +180,15 @@ export class DesignSystem {
     if (variation < 0 || variation > 1000) {
       throw new Error('Light value must be between 0 and 1000');
     }
+
+    const primaryHue = AppStorageV2.connect<NumberObject>(NumberObject, 'primaryHue',
+      () => new NumberObject(-1))!;
+    const primarySat = AppStorageV2.connect<NumberObject>(NumberObject, 'primarySat',
+      () => new NumberObject(-1))!;
+    const surfaceHue = AppStorageV2.connect<NumberObject>(NumberObject, 'surfaceHue',
+      () => new NumberObject(-1))!;
+    const surfaceSat = AppStorageV2.connect<NumberObject>(NumberObject, 'surfaceSat',
+      () => new NumberObject(-1))!;
 
     if (this.context.resourceManager.getConfigurationSync().colorMode ===
     resourceManager.ColorMode.DARK) {
@@ -195,6 +205,23 @@ export class DesignSystem {
 
     // Convert the base RGB color to HSL
     const baseColorHsl = DesignSystem.rgbToHsl(baseColorRgb);
+
+    if (primaryHue.value !== -1 && resourceStr === 'primary') {
+      baseColorHsl.h = primaryHue.value;
+      baseColorHsl.s = 1;
+    }
+    if (primarySat.value !== -1 && resourceStr === 'primary') {
+      baseColorHsl.s = primarySat.value;
+    }
+
+    if (surfaceHue.value !== -1 && resourceStr === 'surface') {
+      baseColorHsl.h = surfaceHue.value;
+      baseColorHsl.s = 1;
+    }
+
+    if (surfaceSat.value !== -1 && resourceStr === 'surface') {
+      baseColorHsl.s = surfaceSat.value;
+    }
 
     // Create a new HSL color.
     // We keep the original hue and saturation, but replace the lightness.
