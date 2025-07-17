@@ -1,5 +1,5 @@
 import { createCubicBezier } from '../utils/Bezier';
-import { Design, DesignSystem } from '../utils/DesignSystem';
+import { DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
