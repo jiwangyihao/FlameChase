@@ -2,9 +2,11 @@ import { createCubicBezier } from '../utils/Bezier';
 import { DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
-import { CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
+import { Coreflame, CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
 import { NumberObject } from '../utils/BaseObjects';
+import { PromptActionClass } from './PromptActionClass';
 import { AppStorageV2 } from '@kit.ArkUI';
+import { ComponentContent } from '@kit.ArkUI';
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
@@ -51,6 +53,7 @@ export struct CoreflamesPage {
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
       'M 230.8655 165.922 A 120 120 0 0 0 135.6631 1.0266';
   private startSelectedTime: number = 0;
+  private customDialogComponentId: number = 0;
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -107,6 +110,33 @@ export struct CoreflamesPage {
         }
       }
     ]);
+  }
+
+  @Builder
+  customDialogComponent(coreflame:Coreflame) {
+    Column(){
+      if(coreflame.name == "坏火"){
+        Text("收集失败。")
+          .fontSize(40)
+          .fontWeight(FontWeight.Bold)
+          .margin({ bottom: 16 })
+      }
+      else{
+        Text("收集成功！")
+          .fontSize(40)
+          .fontWeight(FontWeight.Bold)
+          .margin({ bottom: 16 })
+      }
+      Text(coreflame.description)
+        .fontSize(20)     //改size
+        .fontWeight(FontWeight.Bold)
+        .margin({ bottom: 36 })
+      Button('好的')
+        .onClick(() => {
+          // PromptActionClass.closeDialog();
+        })
+    }
+    .backgroundColor('#FFF0F0F0')
   }
 
   build() {
@@ -344,9 +374,28 @@ export struct CoreflamesPage {
                   const randomIndex = Math.floor(Math.random() * unrecycledCoreflames.length);
                   const selectedCoreflame = unrecycledCoreflames[randomIndex];
                   selectedCoreflame.recycledTime = new Date().getTime();
+                  this.getUIContext().getPromptAction().openCustomDialog({
+                    builder: () => {
+                      this.customDialogComponent(selectedCoreflame)
+                    },
+                    isModal:true,
+                    showInSubWindow:false,
+                    maskColor: Color.Yellow,
+                    maskRect:{ x: 20, y: 20, width: '90%', height: '90%' },
+                  })
                 }
               }).catch((reason: string) => {
                 console.error(reason);
+                const errorCoreflame = new Coreflame('坏火', '', "抱歉，逐梦火光暂时熄灭了。");
+                this.getUIContext().getPromptAction().openCustomDialog({
+                  builder: () => {
+                    this.customDialogComponent(errorCoreflame)
+                  },
+                  isModal:true,
+                  showInSubWindow:false,
+                  maskColor: Color.Gray,
+                  maskRect:{ x: 20, y: 20, width: '90%', height: '90%' },
+                })
               });
             }
             this.selectedTime = 0;
