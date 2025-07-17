@@ -18,6 +18,10 @@ struct Index {
   @Local ccm: NumberObject =
     AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
       () => new NumberObject(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT))!;
+  @Local topRectHeight: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'topRectHeight',
+    () => new NumberObject(0))!;
+  @Local bottomRectHeight: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'bottomRectHeight',
+    () => new NumberObject(0))!;
   @Local currentIndex: number = 0;
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
@@ -94,7 +98,10 @@ struct Index {
       strokeWidth: 0.5,
       color: this.ds.getColor(this.ccm, 'surface', 900, 0.2)
     })
-    .padding({})
+    .padding({
+      top: px2vp(this.topRectHeight.value),
+      bottom: px2vp(this.bottomRectHeight.value),
+    })
     .backgroundColor(this.ds.getColor(this.ccm, 'surface', 30))
     .barHeight(this.ds.getSize(4))
   }

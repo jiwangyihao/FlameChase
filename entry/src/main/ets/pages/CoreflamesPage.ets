@@ -4,10 +4,9 @@ import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { Coreflame, CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
 import { NumberObject } from '../utils/BaseObjects';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { AppStorageV2, display, ImmersiveMode, promptAction } from '@kit.ArkUI';
 import { Schedule, ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
 import { Task, TaskList } from '../model/Task';
-import { ComponentContent, promptAction } from '@kit.ArkUI'
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
@@ -16,22 +15,56 @@ function progressStrokeDashOffset(progress: number) {
   .strokeDashOffset((30 - 240 * (progress % 1)) * Math.PI) // 调用系统属性接口，逐帧回调函数每帧修改可动画属性的值，实现逐帧布局的效果。
 }
 
-
-function parseScaleProgress(progress: number): number {
+function parseScaleProgress(progress: number, scale: number): number {
   progress = (progress + 0.25) % 1;
   const ease = createCubicBezier(0.25, 0.1, 0.25, 1.0)
   if (progress < 0.5) {
-    return (0.8 + 0.2 * ease(progress * 2));
+    return (0.8 + 0.2 * ease(progress * 2) / scale);
   } else {
-    return (0.8 + 0.2 * (1 - ease((progress - 0.5) * 2)));
+    return (0.8 + 0.2 * (1 - ease((progress - 0.5) * 2)) / scale);
+  }
+}
+
+class ProgressScaleParam implements AnimatableArithmetic<ProgressScaleParam> {
+  progress: number;
+  scale: number;
+
+  constructor(progress: number, scale: number) {
+    this.progress = progress;
+    this.scale = scale;
+  }
+
+  plus(rhs: ProgressScaleParam): ProgressScaleParam {
+    return new ProgressScaleParam(
+      this.progress + rhs.progress,
+      this.scale + rhs.scale
+    );
+  }
+
+  subtract(rhs: ProgressScaleParam): ProgressScaleParam {
+    return new ProgressScaleParam(
+      this.progress - rhs.progress,
+      this.scale - rhs.scale
+    );
+  }
+
+  multiply(scale: number): ProgressScaleParam {
+    return new ProgressScaleParam(
+      this.progress * scale,
+      this.scale * scale
+    );
+  }
+
+  equals(rhs: ProgressScaleParam): boolean {
+    return this.progress === rhs.progress && this.scale === rhs.scale;
   }
 }
 
 @AnimatableExtend(Shape)
-function progressScale(progress: number) {
+function progressScale(param: ProgressScaleParam) {
   .scale({
-    x: parseScaleProgress(progress),
-    y: parseScaleProgress(progress)
+    x: parseScaleProgress(param.progress, param.scale) * param.scale,
+    y: parseScaleProgress(param.progress, param.scale) * param.scale
   })
 }
 
@@ -41,6 +74,10 @@ export struct CoreflamesPage {
   @Local ccm: NumberObject =
     AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
       () => new NumberObject(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT))!;
+  @Local topRectHeight: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'topRectHeight',
+    () => new NumberObject(0))!;
+  @Local bottomRectHeight: NumberObject = AppStorageV2.connect<NumberObject>(NumberObject, 'bottomRectHeight',
+    () => new NumberObject(0))!;
   @Local timeDownState: TimeDownState =
     AppStorageV2.connect<TimeDownState>(TimeDownState, () => new TimeDownState())!;
   @Local coreflameGroups: CoreflameGroupList =
@@ -53,11 +90,20 @@ export struct CoreflamesPage {
   @Local ringRotate: number = 0;
   @Local selectedTime: number = 0;
   @Local showDialog: boolean = false;
+  @Local coreflameGroupsCompletedFlag: boolean[] = this.coreflameGroupsCompleted;
+  @Local showFinishProgress: boolean = false;
   private ringPath: string =
     'M 104.3368 1.0266 A 120 120 0 0 0 9.1344 165.922 ' +
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
       'M 230.8655 165.922 A 120 120 0 0 0 135.6631 1.0266';
   private startSelectedTime: number = 0;
+
+  @Computed
+  get coreflameGroupsCompleted(): boolean[] {
+    return this.coreflameGroups.map((group: CoreflameGroup) => {
+      return group.coreflames.every((coreflame: Coreflame) => coreflame.recycledTime > 0);
+    });
+  }
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -78,24 +124,32 @@ export struct CoreflamesPage {
       }
     ]);
 
-    this.getUIContext()?.keyframeAnimateTo({
-      iterations: -1,
-      delay: -250
-    }, [
-      {
-        duration: 10000,
-        curve: Curve.Linear,
-        event: () => {
-          this.scaleProgress = 1;
-        }
-      },
-      {
-        duration: 0,
-        event: () => {
+    const scaleAnimation = () => {
+      if (this.scaleProgress === 1) {
+        this.getUIContext()?.animateTo({
+          iterations: 1,
+          duration: 0,
+          onFinish: () => {
+            scaleAnimation();
+          }
+        }, () => {
           this.scaleProgress = 0;
-        }
+        })
+      } else {
+        this.getUIContext()?.animateTo({
+          iterations: 1,
+          duration: 5000,
+          curve: Curve.Linear,
+          onFinish: () => {
+            scaleAnimation();
+          }
+        }, () => {
+          this.scaleProgress = this.scaleProgress + 0.5;
+          this.coreflameGroupsCompletedFlag = this.coreflameGroupsCompleted;
+        })
       }
-    ]);
+    }
+    scaleAnimation()
 
     this.getUIContext()?.keyframeAnimateTo({
       iterations: -1
@@ -136,20 +190,24 @@ export struct CoreflamesPage {
         .fontColor('#666666')
         .margin({ bottom: 36 })
       Button('好的')
-        .onClick(() => {
-          dialogController.close() // 使用控制器关闭
-        })
-        .backgroundColor('#E0E0E0')
+      // .backgroundColor('#E0E0E0')
         .fontColor('#333333')
         .width(120)
         .height(45)
         .borderRadius(8)
     }
-    .backgroundColor('#FFF0F0F0')
-    .borderRadius(16)
-    .padding(20)
-    .width('70%')
+    .backgroundColor(this.ds.getColor(this.ccm, 'surface', 0, 0))
+    .width('100%')
+    .height('100%')
     .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
+    .padding({
+      top: px2vp(this.topRectHeight.value),
+      bottom: px2vp(this.bottomRectHeight.value),
+    })
+    .onClick(() => {
+      dialogController.close() // 使用控制器关闭
+    })
   }
 
   @Builder
@@ -337,7 +395,11 @@ export struct CoreflamesPage {
         .fontWeight(FontWeight.Bolder)
         .width('100%')
       Column() {
-        Progress({ value: this.coreflameGroups.recycledCoreflames.length, total: 12, type: ProgressType.Linear })
+        Progress({
+          value: this.coreflameGroups.recycledCoreflames.length,
+          total: this.coreflameGroups.flatMap(group => group.coreflames).length,
+          type: ProgressType.Linear
+        })
           .color(this.ds.getColor(this.ccm, 'primary'))
           .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
           .style({
@@ -378,22 +440,28 @@ export struct CoreflamesPage {
           })
 
         Progress({
-          value: 0,
-          total: this.timeDownState.started
-            ? this.timeDownState.total * 1.5
-            : MAX_TIME_DOWN * 1.5,
+          value: this.showFinishProgress ? MAX_TIME_DOWN : 0,
+          total: MAX_TIME_DOWN * 1.5,
           type: ProgressType.Ring
         })
           .width('85%')
           .height('85%')
           .color(new LinearGradient([
             {
-              color: this.ds.getColor(this.ccm, 'primary'),
-              offset: 0.5
+              color: this.ds.getColor(
+                this.ccm,
+                'primary',
+                500
+              ),
+              offset: 0
             },
             {
-              color: this.ds.getColor(this.ccm, 'primary', 500),
-              offset: 1
+              color: this.ds.getColor(
+                this.ccm,
+                'primary',
+                600
+              ),
+              offset: 0.5
             }
           ]))
           .style({
@@ -443,10 +511,18 @@ export struct CoreflamesPage {
           Shape() {
             Path()
               .commands(this.parsePath(this.ringPath))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 200, 0.25))
+              .stroke(
+                this.coreflameGroupsCompleted[index]
+                  ? this.ds.getColor(this.ccm, 'primary', 200, 0.25)
+                  : this.ds.getColor(this.ccm, 'surface', 200, 0.25)
+              )
             Path()
               .commands(this.parsePath(this.ringPath))
-              .stroke(this.ds.getColor(this.ccm, 'surface', 900))
+              .stroke(
+                this.coreflameGroupsCompleted[index]
+                  ? this.ds.getColor(this.ccm, 'primary')
+                  : this.ds.getColor(this.ccm, 'surface', 900)
+              )
               .strokeDashArray([10, 240 * Math.PI])
               .progressStrokeDashOffset((this.strokeDashOffsetProgress) * 4 + 0.25 * index)
             Path()
@@ -508,10 +584,15 @@ export struct CoreflamesPage {
           .height('100%')
           .strokeWidth(2)
           .fillOpacity(0)
-          .progressScale(this.scaleProgress + 0.25 * index)
           .rotate({
             angle: this.ringRotate + 90 * index
           })
+          .progressScale(
+            new ProgressScaleParam(
+              this.scaleProgress + 0.25 * index,
+              this.coreflameGroupsCompletedFlag[index] ? 1.75 : 1
+            )
+          )
         }, (item: number) => item.toString())
 
         Text(
@@ -534,13 +615,14 @@ export struct CoreflamesPage {
             }
           })
           .onActionUpdate((event: GestureEvent | undefined) => {
-            if (event) {
+            if (event && !this.timeDownState.started) {
+              this.showFinishProgress = false;
               this.selectedTime = Math.max(
                 0,
                 Math.min(
                   MAX_TIME_DOWN,
                   this.startSelectedTime + Math.floor(
-                    (event.offsetX - event.offsetY)
+                    (event.offsetX - event.offsetY) / 3
                   )
                 )
               );
@@ -618,13 +700,21 @@ export struct CoreflamesPage {
       .join(' ');
   }
 
+  private finishTask(task: Task) {
+    this.showFinishProgress = true;
+    if (task.bindCoreflame) {
+      task.bindCoreflame.recycledTime = new Date().getTime();
+    }
+    task.finishedAt = new Date().getTime();
+    this.tasks.addTask(task);
+  }
+
   private startTask(task: Task) {
     this.timeDownState.start(this.selectedTime).then(() => {
       if (task.bindSchedule) {
         task.bindSchedule.progress += task.total;
       }
       if (task.bindCoreflame) {
-        task.bindCoreflame.recycledTime = new Date().getTime();
         // 创建对话框控制器
         let dialogController: promptAction.DialogController = new promptAction.DialogController();
         this.getUIContext().getPromptAction().presentCustomDialog(
@@ -633,17 +723,22 @@ export struct CoreflamesPage {
           },
           dialogController,
           {
-            maskRect: {
-              x: 20,
-              y: '10%',
-              width: '90%',
-              height: '80%'
+            maskColor: this.ds.getColor(this.ccm, 'surface', 950, 0.2),
+            backgroundBlurStyle: BlurStyle.Thin,
+            width: '100%',
+            height: px2vp(display.getDefaultDisplaySync().height),
+            offset: {
+              dx: 0,
+              dy: -px2vp(this.topRectHeight.value)
             },
-            maskColor: '#fcfceb87'
+            immersiveMode: ImmersiveMode.EXTEND,
+            cornerRadius: 0,
+            onDidDisappear: () => {
+              this.finishTask(task);
+            }
           }
         );
       }
-      this.tasks.addTask(task);
     }).catch((reason: string) => {
       console.error(reason);
       const errorCoreflame = new Coreflame('坏火', '', "抱歉，逐梦火光暂时熄灭了。");
@@ -654,13 +749,16 @@ export struct CoreflamesPage {
         },
         errorDialogController,
         {
-          maskRect: {
-            x: 20,
-            y: '10%',
-            width: '90%',
-            height: '80%'
+          maskColor: this.ds.getColor(this.ccm, 'surface', 950, 0.2),
+          backgroundBlurStyle: BlurStyle.Thin,
+          width: '100%',
+          height: px2vp(display.getDefaultDisplaySync().height),
+          offset: {
+            dx: 0,
+            dy: -px2vp(this.topRectHeight.value)
           },
-          maskColor: '#80808080'
+          immersiveMode: ImmersiveMode.EXTEND,
+          cornerRadius: 0,
         }
       );
     });

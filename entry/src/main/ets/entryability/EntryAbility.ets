@@ -7,6 +7,7 @@ import { preferences } from '@kit.ArkData';
 import { NumberObject } from '../utils/BaseObjects';
 import { Schedule, ScheduleList } from '../model/Schedule';
 import { TaskESObject, TaskList } from '../model/Task';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
 
@@ -66,6 +67,32 @@ export default class EntryAbility extends UIAbility {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
         return;
       }
+
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
+      // 1. 设置窗口全屏
+      let isLayoutFullScreen = true;
+      windowClass.setWindowLayoutFullScreen(isLayoutFullScreen).then(() => {
+        console.info('Succeeded in setting the window layout to full-screen mode.');
+      }).catch((err: BusinessError) => {
+        console.error('Failed to set the window layout to full-screen mode. Cause:' + JSON.stringify(err));
+      });
+      let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 此处以导航条避让为例
+      let avoidArea = windowClass.getWindowAvoidArea(type);
+      AppStorageV2.connect<NumberObject>(NumberObject, 'bottomRectHeight',
+        () => new NumberObject(avoidArea.bottomRect.height))!;
+
+      type = window.AvoidAreaType.TYPE_SYSTEM; // 以状态栏避让为例
+      avoidArea = windowClass.getWindowAvoidArea(type);
+      AppStorageV2.connect<NumberObject>(NumberObject, 'topRectHeight',
+        () => new NumberObject(avoidArea.topRect.height))!;
+
+      // windowClass.on('avoidAreaChange', (data) => {
+      //   if (data.type === window.AvoidAreaType.TYPE_SYSTEM) {
+      //     topRectHeight.value = data.area.topRect.height;
+      //   } else if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+      //     bottomRectHeight.value = data.area.bottomRect.height;
+      //   }
+      // });
 
       const ds = new DesignSystem();
       ds.register(this.context)
