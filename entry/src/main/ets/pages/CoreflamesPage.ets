@@ -359,6 +359,12 @@ export struct CoreflamesPage {
     }
     .height('100%')
     .width('100%')
+    .padding({
+      left: this.ds.getSize(1),
+      right: this.ds.getSize(1),
+      bottom: this.ds.getSize(1.5),
+      top: this.ds.getSize(2)
+    })
     .justifyContent(FlexAlign.SpaceBetween)
   }
 

@@ -5,6 +5,7 @@ import { DesignSystem } from '../utils/DesignSystem';
 import { CoreflameGroup, CoreflameGroupList, getCoreflamesFromJSON } from '../model/Coreflame';
 import { preferences } from '@kit.ArkData';
 import { NumberObject } from '../utils/BaseObjects';
+import { Schedule, ScheduleList } from '../model/Schedule';
 
 const DOMAIN = 0x0000;
 
@@ -14,6 +15,8 @@ export default class EntryAbility extends UIAbility {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
       () => new NumberObject(this.context.config.colorMode!));
+
+    // Initialize the Coreflames
     const coreflames = getCoreflamesFromJSON(this.context)
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
@@ -34,6 +37,12 @@ export default class EntryAbility extends UIAbility {
       }
     }
     AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList(...coreflameGroups));
+
+    //Initialize Schedule
+    const schedulePreferences = preferences.getPreferencesSync(this.context, { name: 'Schedule' });
+    const schedules =
+      new ScheduleList(...(JSON.parse(schedulePreferences.getSync('schedules', "[]") as string) as Schedule[]));
+    AppStorageV2.connect<ScheduleList>(ScheduleList, () => schedules);
   }
 
   onDestroy(): void {
@@ -81,6 +90,12 @@ export default class EntryAbility extends UIAbility {
       }
     }
     coreflamesPreferences.flushSync();
+
+    const schedulePreferences = preferences.getPreferencesSync(this.context, { name: 'Schedule' });
+    const schedules =
+      AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;
+    schedulePreferences.putSync('schedules', JSON.stringify(schedules.toESObject()));
+    schedulePreferences.flushSync();
   }
 
   onForeground(): void {

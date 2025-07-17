@@ -27,6 +27,26 @@
     {
       "name": "Chronicle",
       "value": "Chronicle"
+    },
+    {
+      "name": "Chaos",
+      "value": "Chaos"
+    },
+    {
+      "name": "Study",
+      "value": "Study"
+    },
+    {
+      "name": "Work",
+      "value": "Work"
+    },
+    {
+      "name": "Exercise",
+      "value": "Exercise"
+    },
+    {
+      "name": "Ponder",
+      "value": "Ponder"
     }
   ]
 }

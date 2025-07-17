@@ -15,6 +15,12 @@ export struct AwardsPage {
     }
     .height('100%')
     .width('100%')
+    .padding({
+      left: this.ds.getSize(1),
+      right: this.ds.getSize(1),
+      bottom: this.ds.getSize(5.5),
+      top: this.ds.getSize(2)
+    })
     .alignItems(HorizontalAlign.Start)
   }
 }

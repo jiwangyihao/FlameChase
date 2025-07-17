@@ -19,6 +19,26 @@
     {
       "name": "Chronicle",
       "value": "记载"
+    },
+    {
+      "name": "Chaos",
+      "value": "混沌"
+    },
+    {
+      "name": "Study",
+      "value": "学习"
+    },
+    {
+      "name": "Work",
+      "value": "工作"
+    },
+    {
+      "name": "Exercise",
+      "value": "运动"
+    },
+    {
+      "name": "Ponder",
+      "value": "深思"
     }
   ]
 }
