@@ -5,7 +5,7 @@ import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { Coreflame, CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
 import { NumberObject } from '../utils/BaseObjects';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
+import { Schedule, ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
 import { Task, TaskList } from '../model/Task';
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
@@ -142,7 +142,7 @@ export struct CoreflamesPage {
   }
 
   @Builder
-  dialogBuilder() {
+  startPanelBuilder() {
     Column({ space: this.ds.getSize(0.25) }) {
       Text("- 选择类别快速开始 - ")
         .fontSize(this.ds.getSize(1))
@@ -224,31 +224,97 @@ export struct CoreflamesPage {
       .margin({
         bottom: this.ds.getSize(0.25),
       })
-    Row({ space: this.ds.getSize(0.5) }) {
-      Text('暂无计划')
-        .fontSize(this.ds.getSize(1))
-        .fontWeight(FontWeight.Bold)
-        .fontColor(
-          this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+    if (this.schedules.ongoingSchedules().length > 0) {
+      ForEach(this.schedules.ongoingSchedules(), (schedule: Schedule, index: number) => {
+        Row() {
+          Image(scheduleCategoryIcons.get(schedule.category))
+            .width(this.ds.getSize(1.5))
+            .height(this.ds.getSize(1.5))
+            .fillColor(
+              this.ds.getColor(this.ccm, 'surface', 900)
+            )
+          Column({ space: this.ds.getSize(0.25) }) {
+            Row() {
+              Text(schedule.title)
+                .fontSize(this.ds.getSize(1.2))
+                .fontWeight(FontWeight.Bold)
+
+              Text(`${schedule.progress}/${schedule.total}`)
+                .fontSize(this.ds.getSize(1.2))
+                .fontWeight(FontWeight.Regular)
+            }
+            .justifyContent(FlexAlign.SpaceBetween)
+            .width('100%')
+
+            Progress({ value: schedule.progress, total: schedule.total, type: ProgressType.Linear })
+              .color(this.ds.getColor(this.ccm, 'primary'))
+              .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
+              .style({
+                strokeWidth: this.ds.getSize(0.75)
+              })
+              .border({
+                color: this.ds.getColor(this.ccm, 'primary', 200),
+                width: this.ds.getSize(0.1)
+              })
+              .borderRadius(this.ds.getSize(100))
+          }
+          .alignItems(HorizontalAlign.Start)
+          .margin({ left: this.ds.getSize(1), right: this.ds.getSize(1.5) })
+          .flexGrow(1)
+        }
+        .backgroundColor(
+          this.ds.getColor(this.ccm, 'surface', 100, 0.2)
         )
+        .borderColor(
+          this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+        )
+        .borderWidth(this.ds.getSize(0.15))
+        .width('100%')
+        .height(this.ds.getSize(4))
+        .borderRadius(this.ds.getSize(1))
+        .justifyContent(FlexAlign.Center)
+        .padding({
+          left: this.ds.getSize(1),
+          right: this.ds.getSize(1),
+        })
+        .margin({
+          bottom: this.ds.getSize(0.5),
+        })
+        .onClick(() => {
+          let selectedCoreflame: Coreflame | null = null;
+          if (schedule.category === ScheduleCategory.CHAOS) {
+            selectedCoreflame = this.coreflameGroups.getRandomCoreflame();
+          } else {
+            selectedCoreflame = this.coreflameGroups.getRandomCoreflameByCategory(schedule.category);
+          }
+          this.startTask(new Task(this.selectedTime, -1, schedule, selectedCoreflame));
+          this.showDialog = false;
+        })
+      }, (item: Schedule, index: number) => item.id);
+    } else {
+      Row({ space: this.ds.getSize(0.5) }) {
+        Text('暂无计划')
+          .fontSize(this.ds.getSize(1))
+          .fontWeight(FontWeight.Bold)
+          .fontColor(
+            this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+          )
+      }
+      .backgroundColor(
+        this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+      )
+      .borderColor(
+        this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+      )
+      .borderWidth(this.ds.getSize(0.15))
+      .width('100%')
+      .height(this.ds.getSize(5))
+      .borderRadius(this.ds.getSize(1))
+      .justifyContent(FlexAlign.Center)
+      .margin({
+        bottom: this.ds.getSize(1),
+      })
     }
-    .backgroundColor(
-      this.ds.getColor(this.ccm, 'surface', 100, 0.2)
-    )
-    .borderColor(
-      this.ds.getColor(this.ccm, 'surface', 800, 0.3)
-    )
-    .borderWidth(this.ds.getSize(0.15))
-    .width('100%')
-    .height(this.ds.getSize(5))
-    .borderRadius(this.ds.getSize(1))
-    .justifyContent(FlexAlign.Center)
-    .margin({
-      bottom: this.ds.getSize(1),
-    })
-    .onClick(() => {
-      //
-    })
   }
 
   build() {
@@ -504,7 +570,7 @@ export struct CoreflamesPage {
             this.showDialog = true;
           }
         })
-        .bindSheet($$this.showDialog, this.dialogBuilder(), {
+        .bindSheet($$this.showDialog, this.startPanelBuilder(), {
           backgroundColor: this.ds.getColor(this.ccm, 'surface', 50, 0.2),
           detents: [this.ds.getSize(20), SheetSize.MEDIUM, SheetSize.LARGE],
           blurStyle: BlurStyle.Thick,
@@ -543,6 +609,9 @@ export struct CoreflamesPage {
 
   private startTask(task: Task) {
     this.timeDownState.start(this.selectedTime).then(() => {
+      if (task.bindSchedule) {
+        task.bindSchedule.progress += task.total;
+      }
       if (task.bindCoreflame) {
         task.bindCoreflame.recycledTime = new Date().getTime();
         this.getUIContext().getPromptAction().openCustomDialog({
@@ -560,6 +629,7 @@ export struct CoreflamesPage {
           },
         })
       }
+      this.tasks.addTask(task);
     }).catch((reason: string) => {
       console.error(reason);
       const errorCoreflame = new Coreflame('坏火', '', "抱歉，逐梦火光暂时熄灭了。");

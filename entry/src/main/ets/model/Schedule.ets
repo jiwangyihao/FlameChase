@@ -65,6 +65,14 @@ export class ScheduleList extends Array<Schedule> {
     );
   }
 
+  ongoingSchedules(): Schedule[] {
+    return this.filter(schedule => schedule.progress < schedule.total);
+  }
+
+  completedSchedules(): Schedule[] {
+    return this.filter(schedule => schedule.progress >= schedule.total && schedule.total > 0);
+  }
+
   addSchedule(schedule: Schedule) {
     this.push(schedule);
   }

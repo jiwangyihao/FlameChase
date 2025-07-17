@@ -214,10 +214,12 @@ export struct SchedulePage {
             .width('100%')
             .height('100%')
         } else {
-          ScheduleView()
-          ScheduleView({
-            type: 'completed'
-          })
+          Column() {
+            ScheduleView()
+            ScheduleView({
+              type: 'completed'
+            })
+          }
         }
 
         Button() {

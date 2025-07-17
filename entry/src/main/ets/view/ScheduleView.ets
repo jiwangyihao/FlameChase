@@ -27,21 +27,34 @@ export struct ScheduleView {
         .fillColor(
           this.ds.getColor(this.ccm, 'surface', 900)
         )
-      Column() {
-        Text(schedule.title)
-          .fontSize(this.ds.getSize(1.2))
-          .fontWeight(FontWeight.Regular)
-        Text(schedule.description)
-          .fontSize(this.ds.getSize(1))
-          .fontWeight(FontWeight.Normal)
+      Column({ space: this.ds.getSize(0.25) }) {
+        Row() {
+          Text(schedule.title)
+            .fontSize(this.ds.getSize(1.2))
+            .fontWeight(FontWeight.Bold)
+
+          Text(`${schedule.progress}/${schedule.total}`)
+            .fontSize(this.ds.getSize(1.2))
+            .fontWeight(FontWeight.Regular)
+        }
+        .justifyContent(FlexAlign.SpaceBetween)
+        .width('100%')
+
+        Progress({ value: schedule.progress, total: schedule.total, type: ProgressType.Linear })
+          .color(this.ds.getColor(this.ccm, 'primary'))
+          .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
+          .style({
+            strokeWidth: this.ds.getSize(0.75)
+          })
+          .border({
+            color: this.ds.getColor(this.ccm, 'primary', 200),
+            width: this.ds.getSize(0.1)
+          })
+          .borderRadius(this.ds.getSize(100))
       }
       .alignItems(HorizontalAlign.Start)
-      .margin({ left: this.ds.getSize(1) })
-
-      Blank()
-      // Image($r('app.media.ic_arrow'))
-      //   .width(12)
-      //   .height(24)
+      .margin({ left: this.ds.getSize(1), right: this.ds.getSize(1.5) })
+      .flexGrow(1)
     }
     .width('100%')
     .height(this.ds.getSize(5))
@@ -50,34 +63,66 @@ export struct ScheduleView {
 
   build() {
     Column() {
-      Text("进行中")
+      Text(this.type === 'ongoing' ? "进行中" : "已完成")
         .fontSize(this.ds.getSize(1))
         .fontWeight(FontWeight.Bold)
         .margin({ bottom: this.ds.getSize(0.5) })
 
-      List({ space: this.ds.getSize(1) }) {
-        ForEach(
-          this.schedules
-            .filter(schedule => Number(this.type === 'ongoing') ^ Number(schedule.progress >= schedule.total)),
-          (item: Schedule, index: number) => {
-            ListItem() {
-              this.ScheduleBlockLine(item)
-            }
-          }, (item: Schedule, index: number) => item.title)
+      if (
+        (this.type === 'ongoing'
+          ? this.schedules.ongoingSchedules()
+          : this.schedules.completedSchedules())
+          .length === 0
+      ) {
+        Row() {
+          Text(this.type === 'ongoing' ? "暂无进行中的计划，新建一个吧！" : "暂无已完成的计划，加油哦！")
+            .fontSize(this.ds.getSize(1))
+            .fontWeight(FontWeight.Bold)
+            .fontColor(
+              this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+            )
+        }
+        .backgroundColor(
+          this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+        )
+        .borderColor(
+          this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+        )
+        .borderWidth(this.ds.getSize(0.15))
+        .width('100%')
+        .height(this.ds.getSize(5))
+        .borderRadius(this.ds.getSize(1))
+        .justifyContent(FlexAlign.Center)
+        .margin({
+          bottom: this.ds.getSize(1),
+        })
+      } else {
+        List() {
+          ForEach(this.type === 'ongoing' ? this.schedules.ongoingSchedules() : this.schedules.completedSchedules(),
+            (item: Schedule, index: number) => {
+              ListItem() {
+                this.ScheduleBlockLine(item)
+              }
+            }, (item: Schedule, index: number) => item.title)
+        }
+        .padding({ left: this.ds.getSize(1), right: this.ds.getSize(1) })
+        .divider({
+          strokeWidth: this.ds.getSize(0.1),
+          color: this.ds.getColor(this.ccm, 'surface', 800, 0.25)
+        })
+        .backgroundColor(this.ds.getColor(this.ccm, 'surface', 100, 0.5))
+        .borderColor(
+          this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+        )
+        .borderWidth(this.ds.getSize(0.15))
+        .borderRadius(this.ds.getSize(1))
+        .lanes(new BreakpointType<number>({
+          sm: 1,
+          md: 1,
+          lg: 2,
+          xl: 2
+        }).getValue(this.currentBreakpoint.value))
       }
-      .backgroundColor(this.ds.getColor(this.ccm, 'surface', 100, 0.5))
-      .borderRadius(this.ds.getSize(1))
-      .padding({ left: this.ds.getSize(1), right: this.ds.getSize(1) })
-      .divider({
-        strokeWidth: this.ds.getSize(0.1),
-        color: this.ds.getColor(this.ccm, 'surface', 800, 0.25)
-      })
-      .lanes(new BreakpointType<number>({
-        sm: 1,
-        md: 1,
-        lg: 2,
-        xl: 2
-      }).getValue(this.currentBreakpoint.value))
     }
     .width('100%')
     .margin({ top: 28 })
