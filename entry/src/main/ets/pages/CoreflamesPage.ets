@@ -1,5 +1,5 @@
 import { createCubicBezier } from '../utils/Bezier';
-import { DesignSystem } from '../utils/DesignSystem';
+import { Design, DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
@@ -117,18 +117,28 @@ export struct CoreflamesPage {
         .lineHeight(this.ds.getSize(2))
         .fontWeight(FontWeight.Bolder)
         .width('100%')
-    Column() {
-      Row() {
-        Text($r('app.string.recycledCoreflames'))
-          .fontSize(this.ds.getSize(1.5))
+      Column() {
+        Progress({ value: this.coreflameGroups.recycledCoreflames.length, total: 12, type: ProgressType.Linear })
+          .color(this.ds.getColor(this.ccm, 'primary'))
+          .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
+          .style({
+            strokeWidth: this.ds.getSize(1)
+          })
+          .border({
+            color: this.ds.getColor(this.ccm, 'primary', 200),
+            width: this.ds.getSize(0.1)
+          })
+          .borderRadius(this.ds.getSize(100))
+        Text(this.coreflameGroups.recycledCoreflames.length >= 12 ? $r('app.string.HasRecycledCoreflames') :
+        $r('app.string.ToRecycleCoreflames'))
+          .fontSize(this.ds.getSize(1))
           .lineHeight(this.ds.getSize(2))
           .fontWeight(FontWeight.Bolder)
+          .textAlign(TextAlign.Center)
+          .fontColor(this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.6))
           .width('100%')
+
       }
-      Progress({value:this.coreflameGroups.recycledCoreflames.length, total:12, type:ProgressType.Linear})
-        .color(this.ds.getColor(this.ccm, 'primary'))
-        .backgroundColor(this.ds.getColor(this.ccm, 'surface', 50))
-    }
 
       Stack() {
         // Core time-down component

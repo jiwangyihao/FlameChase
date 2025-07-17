@@ -49,8 +49,12 @@
       "value": "Ponder"
     },
     {
-      "name": "recycledCoreflames",
-      "value": "recycledCoreflames"
+      "name": "ToRecycleCoreflames",
+      "value": "ToRecycleCoreflames"
+    },
+    {
+      "name": "HasRecycledCoreflames",
+      "value": "HasRecycledCoreflames"
     },
     {
       "name": "CaughtInTheDarkTide",

@@ -41,8 +41,12 @@
       "value": "深思"
     },
     {
-      "name": "recycledCoreflames",
-      "value": "回收十二枚火种触发再创世"
+      "name": "ToRecycleCoreflames",
+      "value": "回收火种完成再创世"
+    },
+    {
+      "name": "HasRecycledCoreflames",
+      "value": "请于下一个门扉时觐见奇迹"
     },
     {
       "name": "CaughtInTheDarkTide",
