@@ -11,8 +11,8 @@ export class Schedule {
   @Trace title: string = '';
   @Trace description: string = '';
   @Trace createdAt: number = 0;
-  @Trace type: string = '';
   @Trace total: number = 0;
+  @Trace progress: number = 0;
   @Trace category: ScheduleCategory = ScheduleCategory.CHAOS;
 
   constructor(
@@ -21,14 +21,14 @@ export class Schedule {
     createdAt: number,
     total: number,
     category: ScheduleCategory,
-    type: string = 'ongoing'
+    progress: number = 0
   ) {
     this.title = title;
     this.description = description;
     this.createdAt = createdAt;
     this.total = total;
     this.category = category;
-    this.type = type;
+    this.progress = progress;
   }
 
   toESObject(): ESObject {
@@ -38,7 +38,7 @@ export class Schedule {
       createdAt: this.createdAt,
       total: this.total,
       category: this.category,
-      type: this.type
+      progress: this.progress,
     };
   }
 }
@@ -53,7 +53,7 @@ export class ScheduleList extends Array<Schedule> {
           schedule.createdAt,
           schedule.total,
           schedule.category,
-          schedule.type
+          schedule.progress
         ))
     );
   }

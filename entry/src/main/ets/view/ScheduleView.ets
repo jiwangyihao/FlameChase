@@ -5,6 +5,7 @@ import { ConfigurationConstant } from '@kit.AbilityKit';
 import { Schedule, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
 import { BreakpointType, BreakpointTypeEnum } from '../utils/BreakpointSystem';
 
+
 @ComponentV2
 export struct ScheduleView {
   @Consumer('DesignSystem') ds: DesignSystem = new DesignSystem();
@@ -18,7 +19,7 @@ export struct ScheduleView {
   @Param type: 'ongoing' | 'completed' = 'ongoing';
 
   @Builder
-  KnowledgeBlockLine(schedule: Schedule) {
+  ScheduleBlockLine(schedule: Schedule) {
     Row() {
       Image(scheduleCategoryIcons.get(schedule.category))
         .width(this.ds.getSize(1.5))
@@ -32,7 +33,7 @@ export struct ScheduleView {
           .fontWeight(FontWeight.Normal)
       }
       .alignItems(HorizontalAlign.Start)
-      .margin({ left: 18 })
+      .margin({ left: this.ds.getSize(1) })
 
       Blank()
       // Image($r('app.media.ic_arrow'))
@@ -52,10 +53,12 @@ export struct ScheduleView {
         .margin({ bottom: 8 })
 
       List({ space: 12 }) {
-        ForEach(this.schedules.filter(schedule => schedule.type === this.type),
+        ForEach(
+          this.schedules
+            .filter(schedule => Number(this.type === 'ongoing') ^ Number(schedule.progress >= schedule.total)),
           (item: Schedule, index: number) => {
             ListItem() {
-              this.KnowledgeBlockLine(item)
+              this.ScheduleBlockLine(item)
             }
           }, (item: Schedule, index: number) => item.title)
       }
@@ -63,10 +66,8 @@ export struct ScheduleView {
       .borderRadius(16)
       .padding({ left: 12, right: 12 })
       .divider({
-        strokeWidth: 0.5,
-        startMargin: 38,
-        endMargin: 0,
-        color: '#F2F2F2'
+        strokeWidth: this.ds.getSize(0.1),
+        color: this.ds.getColor(this.ccm, 'surface', 800, 0.25)
       })
       .lanes(new BreakpointType<number>({
         sm: 1,

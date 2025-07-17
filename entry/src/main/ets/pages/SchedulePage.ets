@@ -147,7 +147,7 @@ export struct SchedulePage {
         })
 
       Button(
-        '提交',
+        $r('app.string.submit'),
         { type: ButtonType.Normal, stateEffect: true }
       )
         .linearGradient({
@@ -254,7 +254,7 @@ export struct SchedulePage {
           blurStyle: BlurStyle.Thick,
           maskColor: this.ds.getColor(this.ccm, 'surface', 950, 0.2),
           showClose: true,
-          title: { title: "新建计划" },
+          title: { title: $r('app.string.CreatePlan') },
           width: '95%',
           borderWidth: this.ds.getSize(0.15),
           borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25)

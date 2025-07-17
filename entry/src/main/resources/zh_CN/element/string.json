@@ -41,8 +41,12 @@
       "value": "深思"
     },
     {
-      "name": "recycledCoreflames",
-      "value": "回收十二枚火种触发再创世"
+      "name": "ToRecycleCoreflames",
+      "value": "回收火种完成再创世"
+    },
+    {
+      "name": "HasRecycledCoreflames",
+      "value": "请于下一个门扉时觐见奇迹"
     },
     {
       "name": "CaughtInTheDarkTide",
@@ -69,16 +73,20 @@
       "value": "计划描述"
     },
     {
-      "name": "InputPlanDescription",
-      "value": "请输入计划描述"
-    },
-    {
       "name": "PlanDuration",
       "value": "计划时长"
     },
     {
       "name": "NoPlanYetCreateOneNow",
       "value": "还没有计划，马上创建一个吧！"
+    },
+    {
+      "name": "submit",
+      "value": "提交"
+    },
+    {
+      "name": "CreatePlan",
+      "value": "新建计划"
     }
   ]
 }

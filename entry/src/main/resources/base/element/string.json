@@ -49,8 +49,12 @@
       "value": "Ponder"
     },
     {
-      "name": "recycledCoreflames",
-      "value": "recycledCoreflames"
+      "name": "ToRecycleCoreflames",
+      "value": "ToRecycleCoreflames"
+    },
+    {
+      "name": "HasRecycledCoreflames",
+      "value": "HasRecycledCoreflames"
     },
     {
       "name": "CaughtInTheDarkTide",
@@ -77,16 +81,20 @@
       "value": "PlanDescription"
     },
     {
-      "name": "InputPlanDescription",
-      "value": "InputPlanDescription"
-    },
-    {
       "name": "PlanDuration",
       "value": "PlanDuration"
     },
     {
       "name": "NoPlanYetCreateOneNow",
       "value": "NoPlanYetCreateOneNow"
+    },
+    {
+      "name": "submit",
+      "value": "submit"
+    },
+    {
+      "name": "CreatePlan",
+      "value": "CreatePlan"
     }
   ]
 }
