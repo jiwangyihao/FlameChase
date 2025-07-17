@@ -71,37 +71,21 @@ struct Index {
       TabContent() {
         CoreflamesPage()
       }
-      .padding({
-        left: this.ds.getSize(1),
-        right: this.ds.getSize(1)
-      })
       .tabBar(this.tabBarBuilder($r('app.string.Coreflames'), 0, $r("app.media.mdi__flame")))
 
       TabContent() {
         SchedulePage()
       }
-      .padding({
-        left: this.ds.getSize(1),
-        right: this.ds.getSize(1)
-      })
       .tabBar(this.tabBarBuilder($r('app.string.Schedule'), 1, $r("app.media.mdi__invoice_text_scheduled")))
 
       TabContent() {
         AwardsPage()
       }
-      .padding({
-        left: this.ds.getSize(1),
-        right: this.ds.getSize(1)
-      })
       .tabBar(this.tabBarBuilder($r('app.string.Awards'), 2, $r("app.media.streamline_block__other_ui_award")))
 
       TabContent() {
         ChroniclePage()
       }
-      .padding({
-        left: this.ds.getSize(1),
-        right: this.ds.getSize(1)
-      })
       .tabBar(this.tabBarBuilder($r('app.string.Chronicle'), 3, $r("app.media.mdi__scroll_text")))
     }
     .scrollable(false)
@@ -110,11 +94,8 @@ struct Index {
       strokeWidth: 0.5,
       color: this.ds.getColor(this.ccm, 'surface', 900, 0.2)
     })
-    .padding({
-      top: this.ds.getSize(2),
-      bottom: this.ds.getSize(1.5)
-    })
-    .backgroundColor(this.ds.getColor(this.ccm, 'surface', 20))
+    .padding({})
+    .backgroundColor(this.ds.getColor(this.ccm, 'surface', 30))
     .barHeight(this.ds.getSize(4))
   }
 }

@@ -1,5 +1,5 @@
 import { createCubicBezier } from '../utils/Bezier';
-import { DesignSystem } from '../utils/DesignSystem';
+import { Design, DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { Coreflame, CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
@@ -147,6 +147,28 @@ export struct CoreflamesPage {
         .lineHeight(this.ds.getSize(2))
         .fontWeight(FontWeight.Bolder)
         .width('100%')
+      Column() {
+        Progress({ value: this.coreflameGroups.recycledCoreflames.length, total: 12, type: ProgressType.Linear })
+          .color(this.ds.getColor(this.ccm, 'primary'))
+          .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
+          .style({
+            strokeWidth: this.ds.getSize(1)
+          })
+          .border({
+            color: this.ds.getColor(this.ccm, 'primary', 200),
+            width: this.ds.getSize(0.1)
+          })
+          .borderRadius(this.ds.getSize(100))
+        Text(this.coreflameGroups.recycledCoreflames.length >= 12 ? $r('app.string.HasRecycledCoreflames') :
+        $r('app.string.ToRecycleCoreflames'))
+          .fontSize(this.ds.getSize(1))
+          .lineHeight(this.ds.getSize(2))
+          .fontWeight(FontWeight.Bolder)
+          .textAlign(TextAlign.Center)
+          .fontColor(this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.6))
+          .width('100%')
+
+      }
 
       Stack() {
         // Core time-down component
@@ -338,7 +360,7 @@ export struct CoreflamesPage {
       )
 
       Button(
-        this.timeDownState.started ? '堕入黑潮' : '选择逐火',
+        this.timeDownState.started ? $r('app.string.CaughtInTheDarkTide') : $r('app.string.ChooseToChaseFlame'),
         { type: ButtonType.Normal, stateEffect: true }
       )
         .linearGradient({
@@ -408,6 +430,12 @@ export struct CoreflamesPage {
     }
     .height('100%')
     .width('100%')
+    .padding({
+      left: this.ds.getSize(1),
+      right: this.ds.getSize(1),
+      bottom: this.ds.getSize(1.5),
+      top: this.ds.getSize(2)
+    })
     .justifyContent(FlexAlign.SpaceBetween)
   }
 

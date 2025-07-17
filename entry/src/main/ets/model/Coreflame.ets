@@ -26,6 +26,18 @@ export class CoreflameGroup {
   get unrecycledCoreflames(): Coreflame[] {
     return this.coreflames.filter(coreflame => coreflame.recycledTime < 0);
   }
+
+  set unrecycledCoreflames(_: object) {
+    //
+  }
+
+  get recycledCoreflames(): Coreflame[] {
+    return this.coreflames.filter(coreflame => !(coreflame.recycledTime < 0));
+  }
+
+  set recycledCoreflames(_: object) {
+    //
+  }
 }
 
 export class CoreflameGroupList extends Array<CoreflameGroup> {
@@ -35,6 +47,28 @@ export class CoreflameGroupList extends Array<CoreflameGroup> {
 
   get unrecycledCoreflames(): Coreflame[] {
     return this.flatMap(group => group.unrecycledCoreflames);
+  }
+
+  set unrecycledCoreflames(_: object) {
+    //
+  }
+
+  get recycledCoreflames(): Coreflame[] {
+    return this.flatMap(group => group.recycledCoreflames);
+  }
+
+  set recycledCoreflames(_: object) {
+    //
+  }
+
+  findByName(bindCoreflameName: string): Coreflame | undefined {
+    for (const group of this) {
+      const coreflame = group.coreflames.find(cf => cf.name === bindCoreflameName);
+      if (coreflame) {
+        return coreflame;
+      }
+    }
+    return undefined;
   }
 }
 
