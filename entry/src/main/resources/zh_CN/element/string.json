@@ -39,6 +39,18 @@
     {
       "name": "Ponder",
       "value": "深思"
+    },
+    {
+      "name": "recycledCoreflames",
+      "value": "回收十二枚火种触发再创世"
+    },
+    {
+      "name": "CaughtInTheDarkTide",
+      "value": "堕入黑潮"
+    },
+    {
+      "name": "ChooseToChaseFlame",
+      "value": "选择逐火"
     }
   ]
 }
