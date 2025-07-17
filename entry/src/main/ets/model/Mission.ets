@@ -13,3 +13,4 @@ export class MissionInfo {
         this.MissionState = state;
     }
 }
+export class MissionArr extends Array<MissionInfo>{}
