@@ -27,6 +27,18 @@
     {
       "name": "Chronicle",
       "value": "Chronicle"
+    },
+    {
+      "name": "recycledCoreflames",
+      "value": "recycledCoreflames"
+    },
+    {
+      "name": "CaughtInTheDarkTide",
+      "value": "CaughtInTheDarkTide"
+    },
+    {
+      "name": "ChooseToChaseFlame",
+      "value": "ChooseToChaseFlame"
     }
   ]
 }

@@ -117,6 +117,18 @@ export struct CoreflamesPage {
         .lineHeight(this.ds.getSize(2))
         .fontWeight(FontWeight.Bolder)
         .width('100%')
+    Column() {
+      Row() {
+        Text($r('app.string.recycledCoreflames'))
+          .fontSize(this.ds.getSize(1.5))
+          .lineHeight(this.ds.getSize(2))
+          .fontWeight(FontWeight.Bolder)
+          .width('100%')
+      }
+      Progress({value:this.coreflameGroups.recycledCoreflames.length, total:12, type:ProgressType.Linear})
+        .color(this.ds.getColor(this.ccm, 'primary'))
+        .backgroundColor(this.ds.getColor(this.ccm, 'surface', 50))
+    }
 
       Stack() {
         // Core time-down component
@@ -311,14 +323,25 @@ export struct CoreflamesPage {
         this.timeDownState.started ? '堕入黑潮' : '选择逐火',
         { type: ButtonType.Normal, stateEffect: true }
       )
+        .linearGradient({
+          angle: 150,
+          colors: [
+            [
+              this.timeDownState.started
+                ? this.ds.getColor(this.ccm, 'surface', 800)
+                : this.ds.getColor(this.ccm, 'primary', 500),
+              0
+            ],
+            [
+              this.timeDownState.started
+                ? this.ds.getColor(this.ccm, 'surface', 900)
+                : this.ds.getColor(this.ccm, 'primary', 600),
+              0.5
+            ],
+          ]
+        })
+        .opacity(this.selectedTime && !this.timeDownState.started ? 1 : 0.5)
         .borderRadius(8)
-        .backgroundColor(
-          this.timeDownState.started
-            ? this.ds.getColor(this.ccm, 'surface', 900, 0.5)
-            : this.selectedTime > 0
-            ? this.ds.getColor(this.ccm, 'primary')
-            : this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.4)
-        )
         .width(this.ds.getSize(8))
         .height(this.ds.getSize(2.5))
         .onClick(() => {
