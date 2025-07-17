@@ -7,6 +7,7 @@ import { NumberObject } from '../utils/BaseObjects';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { Schedule, ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
 import { Task, TaskList } from '../model/Task';
+import { ComponentContent, promptAction } from '@kit.ArkUI'
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
@@ -116,29 +117,39 @@ export struct CoreflamesPage {
   }
 
   @Builder
-  customDialogComponent(coreflame: Coreflame) {
+  customDialogComponent(coreflame: Coreflame, dialogController: promptAction.DialogController) {
     Column() {
       if (coreflame.name == "坏火") {
-        Text("收集失败。")
-          .fontSize(40)
+        Text("收集失败.")
+          .fontSize(30)
           .fontWeight(FontWeight.Bold)
           .margin({ bottom: 16 })
       } else {
         Text("收集成功！")
-          .fontSize(40)
+          .fontSize(30)
           .fontWeight(FontWeight.Bold)
           .margin({ bottom: 16 })
       }
       Text(coreflame.description)
         .fontSize(20)     //改size
-        .fontWeight(FontWeight.Bold)
+        .fontWeight(FontWeight.Normal)
+        .fontColor('#666666')
         .margin({ bottom: 36 })
       Button('好的')
         .onClick(() => {
-          // PromptActionClass.closeDialog();
+          dialogController.close() // 使用控制器关闭
         })
+        .backgroundColor('#E0E0E0')
+        .fontColor('#333333')
+        .width(120)
+        .height(45)
+        .borderRadius(8)
     }
     .backgroundColor('#FFF0F0F0')
+    .borderRadius(16)
+    .padding(20)
+    .width('70%')
+    .alignItems(HorizontalAlign.Center)
   }
 
   @Builder
@@ -614,39 +625,44 @@ export struct CoreflamesPage {
       }
       if (task.bindCoreflame) {
         task.bindCoreflame.recycledTime = new Date().getTime();
-        this.getUIContext().getPromptAction().openCustomDialog({
-          builder: () => {
-            this.customDialogComponent(task.bindCoreflame)
+        // 创建对话框控制器
+        let dialogController: promptAction.DialogController = new promptAction.DialogController();
+        this.getUIContext().getPromptAction().presentCustomDialog(
+          () => {
+            this.customDialogComponent(task.bindCoreflame!, dialogController)
           },
-          isModal: true,
-          showInSubWindow: false,
-          maskColor: Color.Yellow,
-          maskRect: {
-            x: 20,
-            y: 20,
-            width: '90%',
-            height: '90%'
-          },
-        })
+          dialogController,
+          {
+            maskRect: {
+              x: 20,
+              y: '10%',
+              width: '90%',
+              height: '80%'
+            },
+            maskColor: '#fcfceb87'
+          }
+        );
       }
       this.tasks.addTask(task);
     }).catch((reason: string) => {
       console.error(reason);
       const errorCoreflame = new Coreflame('坏火', '', "抱歉，逐梦火光暂时熄灭了。");
-      this.getUIContext().getPromptAction().openCustomDialog({
-        builder: () => {
-          this.customDialogComponent(errorCoreflame)
+      let errorDialogController: promptAction.DialogController = new promptAction.DialogController();
+      this.getUIContext().getPromptAction().presentCustomDialog(
+        () => {
+          this.customDialogComponent(errorCoreflame, errorDialogController)
         },
-        isModal: true,
-        showInSubWindow: false,
-        maskColor: Color.Gray,
-        maskRect: {
-          x: 20,
-          y: 20,
-          width: '90%',
-          height: '90%'
-        },
-      })
+        errorDialogController,
+        {
+          maskRect: {
+            x: 20,
+            y: '10%',
+            width: '90%',
+            height: '80%'
+          },
+          maskColor: '#80808080'
+        }
+      );
     });
     this.selectedTime = 0;
   }
