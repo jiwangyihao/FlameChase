@@ -117,6 +117,28 @@ export struct CoreflamesPage {
         .lineHeight(this.ds.getSize(2))
         .fontWeight(FontWeight.Bolder)
         .width('100%')
+      Column() {
+        Progress({ value: this.coreflameGroups.recycledCoreflames.length, total: 12, type: ProgressType.Linear })
+          .color(this.ds.getColor(this.ccm, 'primary'))
+          .backgroundColor(this.ds.getColor(this.ccm, 'primary', 200, 0.15))
+          .style({
+            strokeWidth: this.ds.getSize(1)
+          })
+          .border({
+            color: this.ds.getColor(this.ccm, 'primary', 200),
+            width: this.ds.getSize(0.1)
+          })
+          .borderRadius(this.ds.getSize(100))
+        Text(this.coreflameGroups.recycledCoreflames.length >= 12 ? $r('app.string.HasRecycledCoreflames') :
+        $r('app.string.ToRecycleCoreflames'))
+          .fontSize(this.ds.getSize(1))
+          .lineHeight(this.ds.getSize(2))
+          .fontWeight(FontWeight.Bolder)
+          .textAlign(TextAlign.Center)
+          .fontColor(this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.6))
+          .width('100%')
+
+      }
 
       Stack() {
         // Core time-down component
@@ -311,14 +333,25 @@ export struct CoreflamesPage {
         this.timeDownState.started ? '堕入黑潮' : '选择逐火',
         { type: ButtonType.Normal, stateEffect: true }
       )
+        .linearGradient({
+          angle: 150,
+          colors: [
+            [
+              this.timeDownState.started
+                ? this.ds.getColor(this.ccm, 'surface', 800)
+                : this.ds.getColor(this.ccm, 'primary', 500),
+              0
+            ],
+            [
+              this.timeDownState.started
+                ? this.ds.getColor(this.ccm, 'surface', 900)
+                : this.ds.getColor(this.ccm, 'primary', 600),
+              0.5
+            ],
+          ]
+        })
+        .opacity(this.selectedTime && !this.timeDownState.started ? 1 : 0.5)
         .borderRadius(8)
-        .backgroundColor(
-          this.timeDownState.started
-            ? this.ds.getColor(this.ccm, 'surface', 900, 0.5)
-            : this.selectedTime > 0
-            ? this.ds.getColor(this.ccm, 'primary')
-            : this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.4)
-        )
         .width(this.ds.getSize(8))
         .height(this.ds.getSize(2.5))
         .onClick(() => {
@@ -348,6 +381,12 @@ export struct CoreflamesPage {
     }
     .height('100%')
     .width('100%')
+    .padding({
+      left: this.ds.getSize(1),
+      right: this.ds.getSize(1),
+      bottom: this.ds.getSize(1.5),
+      top: this.ds.getSize(2)
+    })
     .justifyContent(FlexAlign.SpaceBetween)
   }
 

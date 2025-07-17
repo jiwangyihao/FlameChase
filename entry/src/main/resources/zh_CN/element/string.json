@@ -19,6 +19,42 @@
     {
       "name": "Chronicle",
       "value": "记载"
+    },
+    {
+      "name": "Chaos",
+      "value": "混沌"
+    },
+    {
+      "name": "Study",
+      "value": "学习"
+    },
+    {
+      "name": "Work",
+      "value": "工作"
+    },
+    {
+      "name": "Exercise",
+      "value": "运动"
+    },
+    {
+      "name": "Ponder",
+      "value": "深思"
+    },
+    {
+      "name": "ToRecycleCoreflames",
+      "value": "回收火种完成再创世"
+    },
+    {
+      "name": "HasRecycledCoreflames",
+      "value": "请于下一个门扉时觐见奇迹"
+    },
+    {
+      "name": "CaughtInTheDarkTide",
+      "value": "堕入黑潮"
+    },
+    {
+      "name": "ChooseToChaseFlame",
+      "value": "选择逐火"
     }
   ]
 }
