@@ -63,6 +63,38 @@
     {
       "name": "ChooseToChaseFlame",
       "value": "ChooseToChaseFlame"
+    },
+    {
+      "name": "SelectPlanCategory",
+      "value": "SelectPlanCategory"
+    },
+    {
+      "name": "PlanName",
+      "value": "PlanName"
+    },
+    {
+      "name": "InputPlanName",
+      "value": "InputPlanName"
+    },
+    {
+      "name": "PlanDescription",
+      "value": "PlanDescription"
+    },
+    {
+      "name": "PlanDuration",
+      "value": "PlanDuration"
+    },
+    {
+      "name": "NoPlanYetCreateOneNow",
+      "value": "NoPlanYetCreateOneNow"
+    },
+    {
+      "name": "submit",
+      "value": "submit"
+    },
+    {
+      "name": "CreatePlan",
+      "value": "CreatePlan"
     }
   ]
 }

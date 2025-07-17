@@ -330,7 +330,7 @@ export struct CoreflamesPage {
       )
 
       Button(
-        this.timeDownState.started ? '堕入黑潮' : '选择逐火',
+        this.timeDownState.started ? $r('app.string.CaughtInTheDarkTide') : $r('app.string.ChooseToChaseFlame'),
         { type: ButtonType.Normal, stateEffect: true }
       )
         .linearGradient({

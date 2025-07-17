@@ -22,7 +22,7 @@ export struct SchedulePage {
   @Builder
   dialogBuilder() {
     Column({ space: this.ds.getSize(0.25) }) {
-      Text("选择计划类别")
+      Text($r('app.string.SelectPlanCategory'))
         .fontSize(this.ds.getSize(1))
         .fontWeight(FontWeight.Bold)
         .margin({
@@ -80,14 +80,14 @@ export struct SchedulePage {
         bottom: this.ds.getSize(1),
       })
 
-      Text("计划名称")
+      Text($r('app.string.PlanName'))
         .fontSize(this.ds.getSize(1))
         .fontWeight(FontWeight.Bold)
         .margin({ bottom: 8 })
 
       TextInput({
         text: this.scheduleName!!,
-        placeholder: "请输入计划名称",
+        placeholder: $r('app.string.InputPlanName'),
       })
         .type(InputType.Normal)
         .margin({
@@ -99,7 +99,7 @@ export struct SchedulePage {
         .borderRadius(this.ds.getSize(0.5))
         .placeholderColor(this.ds.getColor(this.ccm, 'surface', 800, 0.5))
 
-      Text("计划描述")
+      Text($r('app.string.PlanDescription'))
         .fontSize(this.ds.getSize(1))
         .fontWeight(FontWeight.Bold)
         .margin({ bottom: 8 })
@@ -118,7 +118,7 @@ export struct SchedulePage {
         .placeholderColor(this.ds.getColor(this.ccm, 'surface', 800, 0.5))
 
       Row() {
-        Text("计划时长")
+        Text($r('app.string.PlanDuration'))
           .fontSize(this.ds.getSize(1))
           .fontWeight(FontWeight.Bold)
         Text(this.scheduleDuration.toFixed(0) + " 分钟")
@@ -147,7 +147,7 @@ export struct SchedulePage {
         })
 
       Button(
-        '提交',
+        $r('app.string.submit'),
         { type: ButtonType.Normal, stateEffect: true }
       )
         .linearGradient({
@@ -205,7 +205,7 @@ export struct SchedulePage {
 
       Stack() {
         if (this.schedules.length === 0) {
-          Text("还没有计划，快创建一个吧！")
+          Text($r('app.string.NoPlanYetCreateOneNow'))
             .fontSize(this.ds.getSize(1.5))
             .fontColor(this.ds.getColor(this.ccm, 'surface', 900, 0.5))
             .textAlign(TextAlign.Center)
@@ -254,10 +254,11 @@ export struct SchedulePage {
           blurStyle: BlurStyle.Thick,
           maskColor: this.ds.getColor(this.ccm, 'surface', 950, 0.2),
           showClose: true,
-          title: { title: "新建计划" },
+          title: { title: $r('app.string.CreatePlan') },
           width: '95%',
           borderWidth: this.ds.getSize(0.15),
-          borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25)
+          borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25),
+          preferType: SheetType.BOTTOM
         })
       }
       .width('100%')

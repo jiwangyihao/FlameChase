@@ -60,6 +60,16 @@ export class CoreflameGroupList extends Array<CoreflameGroup> {
   set recycledCoreflames(_: object) {
     //
   }
+
+  findByName(bindCoreflameName: string): Coreflame | undefined {
+    for (const group of this) {
+      const coreflame = group.coreflames.find(cf => cf.name === bindCoreflameName);
+      if (coreflame) {
+        return coreflame;
+      }
+    }
+    return undefined;
+  }
 }
 
 export function getCoreflamesFromJSON(context: Context) {
