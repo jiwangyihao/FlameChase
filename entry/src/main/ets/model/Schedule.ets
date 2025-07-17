@@ -1,3 +1,5 @@
+import { util } from '@kit.ArkTS';
+
 export enum ScheduleCategory {
   CHAOS = 'Chaos',
   STUDY = 'Study',
@@ -8,6 +10,7 @@ export enum ScheduleCategory {
 
 @ObservedV2
 export class Schedule {
+  id: string = '';
   @Trace title: string = '';
   @Trace description: string = '';
   @Trace createdAt: number = 0;
@@ -21,7 +24,8 @@ export class Schedule {
     createdAt: number,
     total: number,
     category: ScheduleCategory,
-    progress: number = 0
+    progress: number = 0,
+    id: string = util.generateRandomUUID(false)
   ) {
     this.title = title;
     this.description = description;
@@ -29,6 +33,7 @@ export class Schedule {
     this.total = total;
     this.category = category;
     this.progress = progress;
+    this.id = id;
   }
 
   toESObject(): ESObject {
@@ -39,6 +44,7 @@ export class Schedule {
       total: this.total,
       category: this.category,
       progress: this.progress,
+      id: this.id,
     };
   }
 }
@@ -53,7 +59,8 @@ export class ScheduleList extends Array<Schedule> {
           schedule.createdAt,
           schedule.total,
           schedule.category,
-          schedule.progress
+          schedule.progress,
+          schedule.id
         ))
     );
   }
@@ -71,6 +78,10 @@ export class ScheduleList extends Array<Schedule> {
 
   findByTitle(title: string): Schedule | undefined {
     return this.find(schedule => schedule.title === title);
+  }
+
+  findById(id: string): Schedule | undefined {
+    return this.find(schedule => schedule.id === id);
   }
 
   toESObject(): ESObject[] {

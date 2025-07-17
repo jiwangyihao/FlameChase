@@ -257,7 +257,8 @@ export struct SchedulePage {
           title: { title: $r('app.string.CreatePlan') },
           width: '95%',
           borderWidth: this.ds.getSize(0.15),
-          borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25)
+          borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25),
+          preferType: SheetType.BOTTOM
         })
       }
       .width('100%')
