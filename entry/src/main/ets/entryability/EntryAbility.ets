@@ -11,6 +11,34 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
 
+function saveData(context: Context) {
+  const coreflamesPreferences = preferences.getPreferencesSync(context, { name: 'Coreflames' });
+  const coreflameGroupList =
+    AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList())!;
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTodayTimestamp = startOfToday.getTime();
+  for (const group of coreflameGroupList) {
+    for (const coreflame of group.coreflames) {
+      if (coreflame.recycledTime > startOfTodayTimestamp) {
+        coreflamesPreferences.putSync(coreflame.name.toString(), coreflame.recycledTime);
+      }
+    }
+  }
+  coreflamesPreferences.flushSync();
+
+  const schedulePreferences = preferences.getPreferencesSync(context, { name: 'Schedule' });
+  const schedules =
+    AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;
+  schedulePreferences.putSync('schedules', JSON.stringify(schedules.toESObject()));
+  schedulePreferences.flushSync();
+
+  const taskPreferences = preferences.getPreferencesSync(context, { name: 'Task' });
+  const tasks =
+    AppStorageV2.connect<TaskList>(TaskList, () => new TaskList(schedules, coreflameGroupList))!;
+  taskPreferences.putSync('tasks', JSON.stringify(tasks.toESObject()));
+  taskPreferences.flushSync();
+}
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -110,32 +138,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageDestroy(): void {
     // Main window is destroyed, release UI related resources
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
-
-    const coreflamesPreferences = preferences.getPreferencesSync(this.context, { name: 'Coreflames' });
-    const coreflameGroupList =
-      AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList())!;
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    const startOfTodayTimestamp = startOfToday.getTime();
-    for (const group of coreflameGroupList) {
-      for (const coreflame of group.coreflames) {
-        if (coreflame.recycledTime > startOfTodayTimestamp) {
-          coreflamesPreferences.putSync(coreflame.name.toString(), coreflame.recycledTime);
-        }
-      }
-    }
-    coreflamesPreferences.flushSync();
-
-    const schedulePreferences = preferences.getPreferencesSync(this.context, { name: 'Schedule' });
-    const schedules =
-      AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;
-    schedulePreferences.putSync('schedules', JSON.stringify(schedules.toESObject()));
-    schedulePreferences.flushSync();
-
-    const taskPreferences = preferences.getPreferencesSync(this.context, { name: 'Task' });
-    const tasks =
-      AppStorageV2.connect<TaskList>(TaskList, () => new TaskList(schedules, coreflameGroupList))!;
-    taskPreferences.putSync('tasks', JSON.stringify(tasks.toESObject()));
+    saveData(this.context);
   }
 
   onForeground(): void {
@@ -146,5 +149,6 @@ export default class EntryAbility extends UIAbility {
   onBackground(): void {
     // Ability has back to background
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+    saveData(this.context);
   }
 }

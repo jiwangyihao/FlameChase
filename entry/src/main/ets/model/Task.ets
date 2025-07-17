@@ -9,6 +9,18 @@ export interface TaskESObject {
   category: ScheduleCategory;
 }
 
+export interface TaskStats {
+  total: number;
+  totalTime: number;
+  recycledCoreflames: Map<ScheduleCategory, number>;
+}
+
+export interface DayTaskStats {
+  date: number; // Timestamp of the day
+  general: TaskStats;
+  byCategory: Map<ScheduleCategory, TaskStats>;
+}
+
 export class Task {
   total: number = 0;
   finishedAt: number = 0;
@@ -30,7 +42,7 @@ export class Task {
     this.category = bindSchedule ? bindSchedule.category : category;
   }
 
-  toESObject(): ESObject {
+  toESObject(): TaskESObject {
     return {
       total: this.total,
       finishedAt: this.finishedAt,
@@ -64,7 +76,47 @@ export class TaskList extends Array<Task> {
     ));
   }
 
-  toESObject(): ESObject[] {
-    return this.map((task): ESObject => task.toESObject());
+  toESObject(): TaskESObject[] {
+    return this.map((task): TaskESObject => task.toESObject());
+  }
+
+  calculateStats(): DayTaskStats[] {
+    const statsMap: Map<number, DayTaskStats> = new Map();
+
+    for (const task of this) {
+      if (task.finishedAt === 0) {
+        continue;
+      } // Skip unfinished tasks
+
+      const date = new Date(task.finishedAt);
+      date.setHours(0, 0, 0, 0);
+      const timestamp = date.getTime();
+
+      if (!statsMap.has(timestamp)) {
+        statsMap.set(timestamp, {
+          date: timestamp,
+          general: { total: 0, totalTime: 0, recycledCoreflames: new Map() },
+          byCategory: new Map(),
+        });
+      }
+
+      const dayStats = statsMap.get(timestamp)!;
+      dayStats.general.total += 1;
+      dayStats.general.totalTime += task.total;
+
+      if (!dayStats.byCategory.has(task.category)) {
+        dayStats.byCategory.set(task.category, { total: 0, totalTime: 0, recycledCoreflames: new Map() });
+      }
+      const categoryStats = dayStats.byCategory.get(task.category)!;
+      categoryStats.total += task.total;
+      categoryStats.totalTime += task.total;
+
+      if (task.bindCoreflame) {
+        const recycledCount = dayStats.general.recycledCoreflames.get(task.bindCoreflame.bind) || 0;
+        dayStats.general.recycledCoreflames.set(task.bindCoreflame.bind, recycledCount + task.total);
+      }
+    }
+
+    return Array.from(statsMap.values());
   }
 }
