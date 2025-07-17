@@ -195,7 +195,7 @@ export struct CoreflamesPage {
             } else {
               selectedCoreflame = this.coreflameGroups.getRandomCoreflameByCategory(category);
             }
-            this.startTask(new Task(this.selectedTime, -1, null, selectedCoreflame));
+            this.startTask(new Task(this.selectedTime, -1, null, selectedCoreflame, category));
             this.showDialog = false;
           })
         })

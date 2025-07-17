@@ -1,11 +1,12 @@
 import { Coreflame, CoreflameGroupList } from './Coreflame';
-import { Schedule, ScheduleList } from './Schedule';
+import { Schedule, ScheduleCategory, ScheduleList } from './Schedule';
 
 export interface TaskESObject {
   total: number;
   finishedAt: number;
   bindScheduleId: string;
   bindCoreflameName: string;
+  category: ScheduleCategory;
 }
 
 export class Task {
@@ -13,17 +14,20 @@ export class Task {
   finishedAt: number = 0;
   bindSchedule: Schedule | null = null;
   bindCoreflame: Coreflame | null = null;
+  category: ScheduleCategory = ScheduleCategory.CHAOS;
 
   constructor(
     total: number = 0,
     finishedAt: number = 0,
     bindSchedule: Schedule | null = null,
-    bindCoreflame: Coreflame | null = null
+    bindCoreflame: Coreflame | null = null,
+    category: ScheduleCategory = ScheduleCategory.CHAOS
   ) {
     this.total = total;
     this.finishedAt = finishedAt;
     this.bindSchedule = bindSchedule;
     this.bindCoreflame = bindCoreflame;
+    this.category = bindSchedule ? bindSchedule.category : category;
   }
 
   toESObject(): ESObject {
@@ -32,18 +36,20 @@ export class Task {
       finishedAt: this.finishedAt,
       bindScheduleId: this.bindSchedule ? this.bindSchedule.id : '',
       bindCoreflameName: this.bindCoreflame ? this.bindCoreflame.name : '',
+      category: this.category,
     };
   }
 }
 
 export class TaskList extends Array<Task> {
-  constructor(scheduleList: ScheduleList, coreflameGroupList:CoreflameGroupList, ...tasks: TaskESObject[]) {
+  constructor(scheduleList: ScheduleList, coreflameGroupList: CoreflameGroupList, ...tasks: TaskESObject[]) {
     super(
       ...tasks.map(task => new Task(
         task.total,
         task.finishedAt,
         scheduleList.findById(task.bindScheduleId) || null,
-        coreflameGroupList.findByName(task.bindCoreflameName) || null
+        coreflameGroupList.findByName(task.bindCoreflameName) || null,
+        task.category || ScheduleCategory.CHAOS
       ))
     );
   }
@@ -53,7 +59,8 @@ export class TaskList extends Array<Task> {
       task.total,
       task.finishedAt,
       task.bindSchedule,
-      task.bindCoreflame
+      task.bindCoreflame,
+      task.category
     ));
   }
 }
