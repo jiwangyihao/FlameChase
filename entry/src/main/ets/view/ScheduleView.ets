@@ -24,6 +24,9 @@ export struct ScheduleView {
       Image(scheduleCategoryIcons.get(schedule.category))
         .width(this.ds.getSize(1.5))
         .height(this.ds.getSize(1.5))
+        .fillColor(
+          this.ds.getColor(this.ccm, 'surface', 900)
+        )
       Column() {
         Text(schedule.title)
           .fontSize(this.ds.getSize(1.2))
@@ -48,11 +51,11 @@ export struct ScheduleView {
   build() {
     Column() {
       Text("进行中")
-        .fontSize(14)
-        .fontWeight(500)
-        .margin({ bottom: 8 })
+        .fontSize(this.ds.getSize(1))
+        .fontWeight(FontWeight.Bold)
+        .margin({ bottom: this.ds.getSize(0.5) })
 
-      List({ space: 12 }) {
+      List({ space: this.ds.getSize(1) }) {
         ForEach(
           this.schedules
             .filter(schedule => Number(this.type === 'ongoing') ^ Number(schedule.progress >= schedule.total)),
@@ -62,9 +65,9 @@ export struct ScheduleView {
             }
           }, (item: Schedule, index: number) => item.title)
       }
-      .backgroundColor(Color.White)
-      .borderRadius(16)
-      .padding({ left: 12, right: 12 })
+      .backgroundColor(this.ds.getColor(this.ccm, 'surface', 100, 0.5))
+      .borderRadius(this.ds.getSize(1))
+      .padding({ left: this.ds.getSize(1), right: this.ds.getSize(1) })
       .divider({
         strokeWidth: this.ds.getSize(0.1),
         color: this.ds.getColor(this.ccm, 'surface', 800, 0.25)
