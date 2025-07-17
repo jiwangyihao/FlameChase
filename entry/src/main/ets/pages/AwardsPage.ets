@@ -139,51 +139,52 @@ export struct AwardsPage {
     })
   }
 
-/*  @Builder
-  PageMap(name: string) {
-    if (name === "first_page") {
-      pageOneTmp()
-    }
-  }*/
+  /*  @Builder
+    PageMap(name: string) {
+      if (name === "first_page") {
+        pageOneTmp()
+      }
+    }*/
 
   build() {
     /*Navigation(this.pathStack) {*/
-      Column() {
-        Text($r('app.string.Awards'))
-          .fontSize(this.ds.getSize(1.5))
-          .textAlign(TextAlign.Start)
-          .lineHeight(this.ds.getSize(2))
-          .fontWeight(FontWeight.Bolder)
-          .width('100%')
-        Row() {
-          Button("已完成", { type: ButtonType.Normal, stateEffect: false })
-            .onClick(() => {
-              this.completed = true;
-            })
-            .borderRadius(8)
-            .fontSize(this.ds.getSize(0.75))
-            .fontWeight(FontWeight.Bold)
-            .width('50%')
-            .backgroundColor(this.completed ? this.ds.getColor(this.ccm, 'surface', 600, 0.3) :
-            this.ds.getColor(this.ccm, 'surface', 400, 0.2))
-            .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
-          Button("未完成", { type: ButtonType.Normal, stateEffect: false })
-            .onClick(() => {
-              this.completed = false;
-            })
-            .borderRadius(8)
-            .fontSize(this.ds.getSize(0.75))
-            .fontWeight(FontWeight.Bold)
-            .width('50%')
-            .backgroundColor(this.completed ? this.ds.getColor(this.ccm, 'surface', 400, 0.2) :
-            this.ds.getColor(this.ccm, 'surface', 600, 0.3))
-            .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
-        }
+    Column() {
+      Text($r('app.string.Awards'))
+        .fontSize(this.ds.getSize(1.5))
+        .textAlign(TextAlign.Start)
+        .lineHeight(this.ds.getSize(2))
+        .fontWeight(FontWeight.Bolder)
         .width('100%')
+      // Row() {
+      //   Button("已完成", { type: ButtonType.Normal, stateEffect: false })
+      //     .onClick(() => {
+      //       this.completed = true;
+      //     })
+      //     .borderRadius(8)
+      //     .fontSize(this.ds.getSize(0.75))
+      //     .fontWeight(FontWeight.Bold)
+      //     .width('50%')
+      //     .backgroundColor(this.completed ? this.ds.getColor(this.ccm, 'surface', 600, 0.3) :
+      //     this.ds.getColor(this.ccm, 'surface', 400, 0.2))
+      //     .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
+      //   Button("未完成", { type: ButtonType.Normal, stateEffect: false })
+      //     .onClick(() => {
+      //       this.completed = false;
+      //     })
+      //     .borderRadius(8)
+      //     .fontSize(this.ds.getSize(0.75))
+      //     .fontWeight(FontWeight.Bold)
+      //     .width('50%')
+      //     .backgroundColor(this.completed ? this.ds.getColor(this.ccm, 'surface', 400, 0.2) :
+      //     this.ds.getColor(this.ccm, 'surface', 600, 0.3))
+      //     .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
+      // }
+      // .width('100%')
 
+      Stack() {
         List() {
           ForEach(this.MissionArr, (item: MissionInfo, index: number) => {
-            if(item.MissionState===this.completed) {
+            if (item.MissionState === this.completed) {
               ListItem() {
                 Row() {
                   Column() {
@@ -253,15 +254,20 @@ export struct AwardsPage {
           borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25)
         })
       }
-      .height('100%')
       .width('100%')
-      .padding({
-        left: this.ds.getSize(1),
-        right: this.ds.getSize(1),
-        bottom: this.ds.getSize(5.5),
-        top: this.ds.getSize(2)
-      })
-      .alignItems(HorizontalAlign.Start)
+      .height('100%')
+      .align(Alignment.TopStart)
+    }
+    .height('100%')
+    .width('100%')
+    .padding({
+      left: this.ds.getSize(1),
+      right: this.ds.getSize(1),
+      bottom: this.ds.getSize(5.5),
+      top: this.ds.getSize(2)
+    })
+    .alignItems(HorizontalAlign.Start)
+
     /*}
     .navDestination(this.PageMap)
     .mode(NavigationMode.Stack)*/
@@ -295,7 +301,8 @@ export struct pageOneTmp {
         {
           Text("火种需求")
           TextInput(*/
-/*{text:this.newMission.MissionRequest}*//*
+/*{text:this.newMission.MissionRequest}*/
+/*
 )
             .type(InputType.Number)
         }
