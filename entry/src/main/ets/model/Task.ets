@@ -63,4 +63,8 @@ export class TaskList extends Array<Task> {
       task.category
     ));
   }
+
+  toESObject(): ESObject[] {
+    return this.map((task): ESObject => task.toESObject());
+  }
 }

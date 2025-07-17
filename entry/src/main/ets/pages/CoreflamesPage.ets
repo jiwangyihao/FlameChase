@@ -706,6 +706,8 @@ export struct CoreflamesPage {
   private startTask(task: Task) {
     this.timeDownState.start(this.selectedTime).then(() => {
       this.showFinishProgress = true;
+      task.finishedAt = new Date().getTime();
+      this.tasks.addTask(task);
       if (task.bindSchedule) {
         task.bindSchedule.progress += task.total;
       }

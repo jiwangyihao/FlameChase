@@ -6,6 +6,7 @@ import { CoreflameGroup, CoreflameGroupList, getCoreflamesFromJSON } from '../mo
 import { preferences } from '@kit.ArkData';
 import { NumberObject } from '../utils/BaseObjects';
 import { Schedule, ScheduleList } from '../model/Schedule';
+import { TaskESObject, TaskList } from '../model/Task';
 
 const DOMAIN = 0x0000;
 
@@ -36,13 +37,20 @@ export default class EntryAbility extends UIAbility {
         }
       }
     }
-    AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList(...coreflameGroups));
+    const coreflameGroupList =
+      AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList(...coreflameGroups));
 
     //Initialize Schedule
     const schedulePreferences = preferences.getPreferencesSync(this.context, { name: 'Schedule' });
     const schedules =
       new ScheduleList(...(JSON.parse(schedulePreferences.getSync('schedules', "[]") as string) as Schedule[]));
     AppStorageV2.connect<ScheduleList>(ScheduleList, () => schedules);
+
+    //Initialize Task
+    const taskPreferences = preferences.getPreferencesSync(this.context, { name: 'Task' });
+    const tasks = new TaskList(schedules, coreflameGroupList!,
+      ...(JSON.parse(taskPreferences.getSync('tasks', "[]") as string) as TaskESObject[]));
+    AppStorageV2.connect<TaskList>(TaskList, () => tasks);
   }
 
   onDestroy(): void {
@@ -96,6 +104,11 @@ export default class EntryAbility extends UIAbility {
       AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;
     schedulePreferences.putSync('schedules', JSON.stringify(schedules.toESObject()));
     schedulePreferences.flushSync();
+
+    const taskPreferences = preferences.getPreferencesSync(this.context, { name: 'Task' });
+    const tasks =
+      AppStorageV2.connect<TaskList>(TaskList, () => new TaskList(schedules, coreflameGroupList))!;
+    taskPreferences.putSync('tasks', JSON.stringify(tasks.toESObject()));
   }
 
   onForeground(): void {
