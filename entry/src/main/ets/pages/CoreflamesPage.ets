@@ -1,5 +1,5 @@
 import { createCubicBezier } from '../utils/Bezier';
-import { Design, DesignSystem } from '../utils/DesignSystem';
+import { DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
@@ -311,14 +311,25 @@ export struct CoreflamesPage {
         this.timeDownState.started ? '堕入黑潮' : '选择逐火',
         { type: ButtonType.Normal, stateEffect: true }
       )
+        .linearGradient({
+          angle: 150,
+          colors: [
+            [
+              this.timeDownState.started
+                ? this.ds.getColor(this.ccm, 'surface', 800)
+                : this.ds.getColor(this.ccm, 'primary', 500),
+              0
+            ],
+            [
+              this.timeDownState.started
+                ? this.ds.getColor(this.ccm, 'surface', 900)
+                : this.ds.getColor(this.ccm, 'primary', 600),
+              0.5
+            ],
+          ]
+        })
+        .opacity(this.selectedTime && !this.timeDownState.started ? 1 : 0.5)
         .borderRadius(8)
-        .backgroundColor(
-          this.timeDownState.started
-            ? this.ds.getColor(this.ccm, 'surface', 900, 0.5)
-            : this.selectedTime > 0
-            ? this.ds.getColor(this.ccm, 'primary')
-            : this.ds.getColor(this.ccm, 'primary', Design.DefaultVariation, 0.4)
-        )
         .width(this.ds.getSize(8))
         .height(this.ds.getSize(2.5))
         .onClick(() => {
