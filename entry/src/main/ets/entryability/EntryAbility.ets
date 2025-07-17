@@ -28,7 +28,7 @@ export default class EntryAbility extends UIAbility {
         coreflame.recycledTime = coreflamesPreferences.getSync(coreflame.name, 0) as number - startOfTodayTimestamp;
       }
       if (coreflameGroups.find(group => group.type === coreflame.type) === undefined) {
-        coreflameGroups.push(new CoreflameGroup(coreflame.type, [coreflame]));
+        coreflameGroups.push(new CoreflameGroup([coreflame]));
       } else {
         const group = coreflameGroups.find(group => group.type === coreflame.type);
         if (group) {

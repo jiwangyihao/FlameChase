@@ -4,9 +4,9 @@ import { ConfigurationConstant } from '@kit.AbilityKit';
 import { parseTimeText, TimeDownState } from '../model/TimeDownState';
 import { Coreflame, CoreflameGroup, CoreflameGroupList } from '../model/Coreflame';
 import { NumberObject } from '../utils/BaseObjects';
-import { PromptActionClass } from './PromptActionClass';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { ComponentContent } from '@kit.ArkUI';
+import { ScheduleCategory, scheduleCategoryIcons, ScheduleList } from '../model/Schedule';
+import { Task, TaskList } from '../model/Task';
 
 const MAX_TIME_DOWN = 3600; // 最大倒计时，单位为秒
 
@@ -44,16 +44,19 @@ export struct CoreflamesPage {
     AppStorageV2.connect<TimeDownState>(TimeDownState, () => new TimeDownState())!;
   @Local coreflameGroups: CoreflameGroupList =
     AppStorageV2.connect<CoreflameGroupList>(CoreflameGroupList, () => new CoreflameGroupList())!;
+  @Local schedules: ScheduleList = AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;
+  @Local tasks: TaskList =
+    AppStorageV2.connect<TaskList>(TaskList, () => new TaskList(this.schedules, this.coreflameGroups))!;
   @Local strokeDashOffsetProgress: number = 0;
   @Local scaleProgress: number = 0;
   @Local ringRotate: number = 0;
   @Local selectedTime: number = 0;
+  @Local showDialog: boolean = false;
   private ringPath: string =
     'M 104.3368 1.0266 A 120 120 0 0 0 9.1344 165.922 ' +
       'M 24.7975 193.0513 A 120 120 0 0 0 215.2024 193.0513 ' +
       'M 230.8655 165.922 A 120 120 0 0 0 135.6631 1.0266';
   private startSelectedTime: number = 0;
-  private customDialogComponentId: number = 0;
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -113,15 +116,14 @@ export struct CoreflamesPage {
   }
 
   @Builder
-  customDialogComponent(coreflame:Coreflame) {
-    Column(){
-      if(coreflame.name == "坏火"){
+  customDialogComponent(coreflame: Coreflame) {
+    Column() {
+      if (coreflame.name == "坏火") {
         Text("收集失败。")
           .fontSize(40)
           .fontWeight(FontWeight.Bold)
           .margin({ bottom: 16 })
-      }
-      else{
+      } else {
         Text("收集成功！")
           .fontSize(40)
           .fontWeight(FontWeight.Bold)
@@ -137,6 +139,116 @@ export struct CoreflamesPage {
         })
     }
     .backgroundColor('#FFF0F0F0')
+  }
+
+  @Builder
+  dialogBuilder() {
+    Column({ space: this.ds.getSize(0.25) }) {
+      Text("- 选择类别快速开始 - ")
+        .fontSize(this.ds.getSize(1))
+        .fontWeight(FontWeight.Bold)
+        .textAlign(TextAlign.Center)
+        .fontColor(
+          this.ds.getColor(this.ccm, 'surface', 900, 0.6)
+        )
+        .width('100%')
+        .margin({
+          bottom: this.ds.getSize(0.25),
+        })
+      Row() {
+        ForEach([
+          ScheduleCategory.CHAOS,
+          ScheduleCategory.STUDY,
+          ScheduleCategory.WORK,
+          ScheduleCategory.EXERCISE,
+          ScheduleCategory.PONDER
+        ], (category: ScheduleCategory) => {
+          Column({ space: this.ds.getSize(0.5) }) {
+            Image(scheduleCategoryIcons.get(category))
+              .width(this.ds.getSize(1.5))
+              .height(this.ds.getSize(1.5))
+              .fillColor(
+                this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+              )
+            Text($r(`app.string.${category}`))
+              .fontSize(this.ds.getSize(1))
+              .fontWeight(FontWeight.Bold)
+              .fontColor(
+                this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+              )
+          }
+          .backgroundColor(
+            this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+          )
+          .borderColor(
+            this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+          )
+          .borderWidth(this.ds.getSize(0.15))
+          .width(this.ds.getSize(4))
+          .height(this.ds.getSize(5))
+          .borderRadius(this.ds.getSize(1))
+          .justifyContent(FlexAlign.Center)
+          .onClick(() => {
+            let selectedCoreflame: Coreflame | null = null;
+            if (category === ScheduleCategory.CHAOS) {
+              selectedCoreflame = this.coreflameGroups.getRandomCoreflame();
+            } else {
+              selectedCoreflame = this.coreflameGroups.getRandomCoreflameByCategory(category);
+            }
+            this.startTask(new Task(this.selectedTime, -1, null, selectedCoreflame));
+            this.showDialog = false;
+          })
+        })
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+      .margin({
+        bottom: this.ds.getSize(1),
+      })
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start)
+    .padding({
+      left: this.ds.getSize(1),
+      right: this.ds.getSize(1),
+    })
+
+    Text("- OR 继续计划 - ")
+      .fontSize(this.ds.getSize(1))
+      .fontWeight(FontWeight.Bold)
+      .textAlign(TextAlign.Center)
+      .fontColor(
+        this.ds.getColor(this.ccm, 'surface', 900, 0.6)
+      )
+      .width('100%')
+      .margin({
+        bottom: this.ds.getSize(0.25),
+      })
+    Row({ space: this.ds.getSize(0.5) }) {
+      Text('暂无计划')
+        .fontSize(this.ds.getSize(1))
+        .fontWeight(FontWeight.Bold)
+        .fontColor(
+          this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+        )
+    }
+    .backgroundColor(
+      this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+    )
+    .borderColor(
+      this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+    )
+    .borderWidth(this.ds.getSize(0.15))
+    .width('100%')
+    .height(this.ds.getSize(5))
+    .borderRadius(this.ds.getSize(1))
+    .justifyContent(FlexAlign.Center)
+    .margin({
+      bottom: this.ds.getSize(1),
+    })
+    .onClick(() => {
+      //
+    })
   }
 
   build() {
@@ -360,7 +472,7 @@ export struct CoreflamesPage {
       )
 
       Button(
-        this.timeDownState.started ? $r('app.string.CaughtInTheDarkTide') : $r('app.string.ChooseToChaseFlame'),
+        this.timeDownState.started ? '堕入黑潮' : '选择逐火',
         { type: ButtonType.Normal, stateEffect: true }
       )
         .linearGradient({
@@ -387,41 +499,22 @@ export struct CoreflamesPage {
         .onClick(() => {
           if (this.timeDownState.started) {
             this.timeDownState.stop();
-          } else {
-            if (this.selectedTime > 0) {
-              this.timeDownState.start(this.selectedTime).then(() => {
-                const unrecycledCoreflames = this.coreflameGroups
-                  .flatMap((coreflameGroup: CoreflameGroup) => coreflameGroup.unrecycledCoreflames);
-                if (unrecycledCoreflames.length > 0) {
-                  const randomIndex = Math.floor(Math.random() * unrecycledCoreflames.length);
-                  const selectedCoreflame = unrecycledCoreflames[randomIndex];
-                  selectedCoreflame.recycledTime = new Date().getTime();
-                  this.getUIContext().getPromptAction().openCustomDialog({
-                    builder: () => {
-                      this.customDialogComponent(selectedCoreflame)
-                    },
-                    isModal:true,
-                    showInSubWindow:false,
-                    maskColor: Color.Yellow,
-                    maskRect:{ x: 20, y: 20, width: '90%', height: '90%' },
-                  })
-                }
-              }).catch((reason: string) => {
-                console.error(reason);
-                const errorCoreflame = new Coreflame('坏火', '', "抱歉，逐梦火光暂时熄灭了。");
-                this.getUIContext().getPromptAction().openCustomDialog({
-                  builder: () => {
-                    this.customDialogComponent(errorCoreflame)
-                  },
-                  isModal:true,
-                  showInSubWindow:false,
-                  maskColor: Color.Gray,
-                  maskRect:{ x: 20, y: 20, width: '90%', height: '90%' },
-                })
-              });
-            }
-            this.selectedTime = 0;
           }
+          if (this.selectedTime > 0) {
+            this.showDialog = true;
+          }
+        })
+        .bindSheet($$this.showDialog, this.dialogBuilder(), {
+          backgroundColor: this.ds.getColor(this.ccm, 'surface', 50, 0.2),
+          detents: [this.ds.getSize(20), SheetSize.MEDIUM, SheetSize.LARGE],
+          blurStyle: BlurStyle.Thick,
+          maskColor: this.ds.getColor(this.ccm, 'surface', 950, 0.2),
+          showClose: true,
+          title: { title: "启程" },
+          width: '95%',
+          borderWidth: this.ds.getSize(0.15),
+          borderColor: this.ds.getColor(this.ccm, 'surface', 950, 0.25),
+          preferType: SheetType.BOTTOM
         })
 
       Row() {
@@ -446,5 +539,45 @@ export struct CoreflamesPage {
         return isNaN(num) ? item : (vp2px(num)).toString();
       })
       .join(' ');
+  }
+
+  private startTask(task: Task) {
+    this.timeDownState.start(this.selectedTime).then(() => {
+      if (task.bindCoreflame) {
+        task.bindCoreflame.recycledTime = new Date().getTime();
+        this.getUIContext().getPromptAction().openCustomDialog({
+          builder: () => {
+            this.customDialogComponent(task.bindCoreflame)
+          },
+          isModal: true,
+          showInSubWindow: false,
+          maskColor: Color.Yellow,
+          maskRect: {
+            x: 20,
+            y: 20,
+            width: '90%',
+            height: '90%'
+          },
+        })
+      }
+    }).catch((reason: string) => {
+      console.error(reason);
+      const errorCoreflame = new Coreflame('坏火', '', "抱歉，逐梦火光暂时熄灭了。");
+      this.getUIContext().getPromptAction().openCustomDialog({
+        builder: () => {
+          this.customDialogComponent(errorCoreflame)
+        },
+        isModal: true,
+        showInSubWindow: false,
+        maskColor: Color.Gray,
+        maskRect: {
+          x: 20,
+          y: 20,
+          width: '90%',
+          height: '90%'
+        },
+      })
+    });
+    this.selectedTime = 0;
   }
 }
