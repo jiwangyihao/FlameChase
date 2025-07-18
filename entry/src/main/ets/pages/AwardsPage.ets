@@ -1,9 +1,10 @@
-import { NumberObject } from '../utils/BaseObjects';
+import { NumberObject, StringObject } from '../utils/BaseObjects';
 import { DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MissionArr, MissionInfo } from '../model/Mission';
 import { Header } from '../view/Header';
+import { BreakpointType, BreakpointTypeEnum } from '../utils/BreakpointSystem';
 
 @ComponentV2
 export struct AwardsPage {
@@ -18,6 +19,9 @@ export struct AwardsPage {
   @Local ccm: NumberObject =
     AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
       () => new NumberObject(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT))!;
+  @Local currentBreakpoint: StringObject =
+    AppStorageV2.connect<StringObject>(StringObject, 'currentBreakpoint',
+      () => new StringObject(BreakpointTypeEnum.MD))!;
   /*@Local schedules: ScheduleList = AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;*/
   @Local showDialog: boolean = false;
   @Local MissionName: string = "";
@@ -142,15 +146,7 @@ export struct AwardsPage {
     })
   }
 
-  /*  @Builder
-    PageMap(name: string) {
-      if (name === "first_page") {
-        pageOneTmp()
-      }
-    }*/
-
   build() {
-    /*Navigation(this.pathStack) {*/
     Column() {
       Header({
         title: $r('app.string.Awards'),
@@ -158,64 +154,122 @@ export struct AwardsPage {
           this.openSetting();
         }
       })
-      // Row() {
-      //   Button("已完成", { type: ButtonType.Normal, stateEffect: false })
-      //     .onClick(() => {
-      //       this.completed = true;
-      //     })
-      //     .borderRadius(8)
-      //     .fontSize(this.ds.getSize(0.75))
-      //     .fontWeight(FontWeight.Bold)
-      //     .width('50%')
-      //     .backgroundColor(this.completed ? this.ds.getColor(this.ccm, 'surface', 600, 0.3) :
-      //     this.ds.getColor(this.ccm, 'surface', 400, 0.2))
-      //     .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
-      //   Button("未完成", { type: ButtonType.Normal, stateEffect: false })
-      //     .onClick(() => {
-      //       this.completed = false;
-      //     })
-      //     .borderRadius(8)
-      //     .fontSize(this.ds.getSize(0.75))
-      //     .fontWeight(FontWeight.Bold)
-      //     .width('50%')
-      //     .backgroundColor(this.completed ? this.ds.getColor(this.ccm, 'surface', 400, 0.2) :
-      //     this.ds.getColor(this.ccm, 'surface', 600, 0.3))
-      //     .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
-      // }
-      // .width('100%')
 
       Stack() {
-        List() {
-          ForEach(this.MissionArr, (item: MissionInfo, index: number) => {
-            if (item.MissionState === this.completed) {
-              ListItem() {
-                Row() {
-                  Column() {
-                    Text(item.MissionName)
-                      .textAlign(TextAlign.Start)
-                    Text(item.MissionDetails)
-                      .textAlign(TextAlign.Start)
-                  }
-                  .width('55%')
+        Column() {
+          Text("上架中")
+            .fontSize(this.ds.getSize(1))
+            .fontWeight(FontWeight.Bold)
+            .margin({ bottom: this.ds.getSize(0.5) })
 
-                  Text('需要火种' + item.MissionRequest + '个')
-                    .width('15%')
-                  Button("delete")
-                    .width('30%')
-                    .onClick(() => {
-                      this.MissionArr.splice(index, 1);
-                    })
-                    .backgroundColor(this.ds.getColor(this.ccm, 'surface', 0))
-                    .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
+          if (
+            this.MissionArr.length > 0
+          ) {
+            List() {
+              ForEach(this.MissionArr, (item: MissionInfo, index: number) => {
+                ListItem() {
+                  Row() {
+                    Image($r('app.media.material_symbols__star_shine_rounded'))
+                      .width(this.ds.getSize(1.5))
+                      .height(this.ds.getSize(1.5))
+                      .fillColor(
+                        this.ds.getColor(this.ccm, 'surface', 900)
+                      )
+                    Column({ space: this.ds.getSize(0.25) }) {
+                      Row() {
+                        Text(item.MissionName)
+                          .fontSize(this.ds.getSize(1))
+                          .fontWeight(FontWeight.Bold)
+
+                        Text(`售价：${item.MissionRequest} 火种`)
+                          .fontSize(this.ds.getSize(0.8))
+                          .fontWeight(FontWeight.Medium)
+                      }
+                      .justifyContent(FlexAlign.SpaceBetween)
+                      .width('100%')
+
+                      Text(item.MissionDetails)
+                        .fontSize(this.ds.getSize(0.8))
+                        .fontWeight(FontWeight.Medium)
+                    }
+                    .alignItems(HorizontalAlign.Start)
+                    .margin({ left: this.ds.getSize(1), right: this.ds.getSize(1.5) })
+                    .flexGrow(1)
+                  }
+                  .width('100%')
+                  .height(this.ds.getSize(5))
+                  .alignItems(VerticalAlign.Center)
+
+                  // Row() {
+                  //   Column() {
+                  //     Text(item.MissionName)
+                  //       .textAlign(TextAlign.Start)
+                  //     Text(item.MissionDetails)
+                  //       .textAlign(TextAlign.Start)
+                  //   }
+                  //   .width('55%')
+                  //
+                  //   Text('需要火种' + item.MissionRequest + '个')
+                  //     .width('15%')
+                  //   Button("delete")
+                  //     .width('30%')
+                  //     .onClick(() => {
+                  //       this.MissionArr.splice(index, 1);
+                  //     })
+                  //     .backgroundColor(this.ds.getColor(this.ccm, 'surface', 0))
+                  //     .fontColor(this.ds.getColor(this.ccm, 'surface', 1000))
+                  // }
+                  // .width('100%').height(100)
+                  // .borderRadius(10).backgroundColor(this.ds.getColor(this.ccm, 'surface', 0, 1))
                 }
-                .width('100%').height(100)
-                .borderRadius(10).backgroundColor(this.ds.getColor(this.ccm, 'surface', 0, 1))
-              }
+              }, (item: MissionInfo) => item.MissionName)
             }
-          }, (item: MissionInfo) => item.MissionName)
+            .padding({ left: this.ds.getSize(1), right: this.ds.getSize(1) })
+            .divider({
+              strokeWidth: this.ds.getSize(0.1),
+              color: this.ds.getColor(this.ccm, 'surface', 800, 0.25)
+            })
+            .backgroundColor(this.ds.getColor(this.ccm, 'surface', 100, 0.5))
+            .borderColor(
+              this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+            )
+            .borderWidth(this.ds.getSize(0.15))
+            .borderRadius(this.ds.getSize(1))
+            .lanes(new BreakpointType<number>({
+              sm: 1,
+              md: 1,
+              lg: 2,
+              xl: 2
+            }).getValue(this.currentBreakpoint.value))
+          } else {
+
+            Row() {
+              Text("暂无上架中的奖励，新建一个吧！")
+                .fontSize(this.ds.getSize(1))
+                .fontWeight(FontWeight.Bold)
+                .fontColor(
+                  this.ds.getColor(this.ccm, 'surface', 800, 0.6)
+                )
+            }
+            .backgroundColor(
+              this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+            )
+            .borderColor(
+              this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+            )
+            .borderWidth(this.ds.getSize(0.15))
+            .width('100%')
+            .height(this.ds.getSize(5))
+            .borderRadius(this.ds.getSize(1))
+            .justifyContent(FlexAlign.Center)
+            .margin({
+              bottom: this.ds.getSize(1),
+            })
+          }
         }
         .width('100%')
-        .height('88%')
+        .margin({ top: 28 })
+        .alignItems(HorizontalAlign.Start)
 
         Button() {
           Image($r('app.media.material_symbols__add_rounded'))
@@ -270,64 +324,5 @@ export struct AwardsPage {
       top: this.ds.getSize(2)
     })
     .alignItems(HorizontalAlign.Start)
-
-    /*}
-    .navDestination(this.PageMap)
-    .mode(NavigationMode.Stack)*/
   }
 }
-
-/*
-@ComponentV2
-export struct pageOneTmp {
-  @Local newMission: MissionInfo = new MissionInfo('','',0,false);
-  @Local pathStack: NavPathStack = new NavPathStack();
-  @Consumer('DesignSystem') ds: DesignSystem = new DesignSystem();
-  @Local ccm: NumberObject =
-    AppStorageV2.connect<NumberObject>(NumberObject, 'currentColorMode',
-      () => new NumberObject(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT))!;
-
-  build() {
-    NavDestination() {
-      Column() {
-        Row()
-        {
-          Text("任务名")
-          TextInput({text:this.newMission.MissionName!!})
-        }
-        Row()
-        {
-          Text("任务细节")
-          TextInput({text:this.newMission.MissionDetails!!})
-        }
-        Row()
-        {
-          Text("火种需求")
-          TextInput(*/
-/*{text:this.newMission.MissionRequest}*/
-/*
-)
-            .type(InputType.Number)
-        }
-        Button("确定", { type: ButtonType.Normal, stateEffect: false })
-          .onClick(() => {
-
-          })
-          .borderRadius(8)
-          .fontSize(this.ds.getSize(1.5))
-          .fontWeight(FontWeight.Bolder)
-          .width('50%')
-          .backgroundColor(this.ds.getColor(this.ccm, 'primary', 500, 1))
-        Text(this.newMission.MissionName)
-      }.width('100%').height('100%')
-    }.title("添加一个任务")
-    .onBackPressed(() => {
-      const popDestinationInfo = this.pathStack.pop(); // 弹出路由栈栈顶元素
-      console.info('pop' + '返回值' + JSON.stringify(popDestinationInfo));
-      return true
-    })
-    .onReady((context: NavDestinationContext) => {
-      this.pathStack = context.pathStack;
-    })
-  }
-}*/
