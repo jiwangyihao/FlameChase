@@ -14,6 +14,7 @@ import {
   TabSegmentButtonV2
 } from '@kit.ArkUI';
 import { NumberObject, StringObject } from '../utils/BaseObjects';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 @Entry
 @ComponentV2
@@ -40,6 +41,7 @@ struct Index {
   @Local currentIndex: number = 0;
   @Local showSetting: boolean = false;
   @Local darkModeIndex: number = 0;
+  @Local languageIndex: number = 0;
   private tabsController: TabsController = new TabsController();
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
 
@@ -100,6 +102,81 @@ struct Index {
         })
 
 
+      // Row() {
+      //   Image($r('app.media.mdi__moon_and_stars'))
+      //     .width(this.ds.getSize(1.5))
+      //     .height(this.ds.getSize(1.5))
+      //     .fillColor(
+      //       this.ds.getColor(this.ccm, 'surface', 900)
+      //     )
+      //   Column({ space: this.ds.getSize(0.25) }) {
+      //     Row() {
+      //       Text("更改界面语言")
+      //         .fontSize(this.ds.getSize(1))
+      //         .fontWeight(FontWeight.Bold)
+      //     }
+      //     .justifyContent(FlexAlign.SpaceBetween)
+      //
+      //     Text("请选择偏好显示语言")
+      //       .fontSize(this.ds.getSize(0.8))
+      //       .fontWeight(FontWeight.Medium)
+      //   }
+      //   .alignItems(HorizontalAlign.Start)
+      //   .margin({ left: this.ds.getSize(0.5) })
+      //
+      //   Blank()
+      //
+      //
+      //   Select([
+      //     { value: '跟随系统' },
+      //     { value: '中文（简体）' },
+      //     { value: 'English' }
+      //   ])
+      //     .selected(this.languageIndex)
+      //     .onSelect((index: number) => {
+      //       console.info('Select:' + index);
+      //       this.languageIndex = index;
+      //       try {
+      //         switch (index) {
+      //           case 0:
+      //             i18n.System.setAppPreferredLanguage('default');
+      //             break;
+      //           case 1:
+      //             i18n.System.setAppPreferredLanguage('zh-Hans'); // 设置应用偏好语言为中文（简体）
+      //             break;
+      //           case 2:
+      //             i18n.System.setAppPreferredLanguage('en'); // 设置应用偏好语言为英文
+      //             break;
+      //           default:
+      //             i18n.System.setAppPreferredLanguage('default');
+      //         }
+      //         i18n.System.setAppPreferredLanguage('zh-Hans'); // 设置应用偏好语言为zh-Hans
+      //       } catch (error) {
+      //         let err: BusinessError = error as BusinessError;
+      //         console.error(`call System.setAppPreferredLanguage failed, error code: ${err.code}, message: ${err.message}.`);
+      //       }
+      //     })
+      // }
+      // .backgroundColor(
+      //   this.ds.getColor(this.ccm, 'surface', 100, 0.2)
+      // )
+      // .borderColor(
+      //   this.ds.getColor(this.ccm, 'surface', 800, 0.3)
+      // )
+      // .borderWidth(this.ds.getSize(0.15))
+      // .width('100%')
+      // .height(this.ds.getSize(4))
+      // .borderRadius(this.ds.getSize(1))
+      // .justifyContent(FlexAlign.Center)
+      // .padding({
+      //   left: this.ds.getSize(1),
+      //   right: this.ds.getSize(0.5),
+      // })
+      // .margin({
+      //   bottom: this.ds.getSize(0.5),
+      // })
+
+
       Row() {
         Image($r('app.media.mdi__moon_and_stars'))
           .width(this.ds.getSize(1.5))
@@ -124,44 +201,47 @@ struct Index {
 
         Blank()
 
-        TabSegmentButtonV2({
-          items: new SegmentButtonV2Items(
-            [
-              new SegmentButtonV2Item({ text: '跟随' }),
-              new SegmentButtonV2Item({ text: '浅色' }),
-              new SegmentButtonV2Item({ text: '深色' }),
-            ]
-          ),
-          selectedIndex: this.darkModeIndex,
-          buttonBackgroundColor: ColorMetrics.numeric(
-            parseInt(
-              (this.ds.getColor(this.ccm, 'surface', 100, 0.75) as string)
-                .replace('#', ''),
-              16)
-          ),
-          itemSelectedBackgroundColor: ColorMetrics.numeric(
-            parseInt(
-              (this.ds.getColor(this.ccm, 'surface', 0, 0.5) as string)
-                .replace('#', ''),
-              16)
-          ),
-          itemPadding: {
-            start: LengthMetrics.vp(0),
-            end: LengthMetrics.vp(0)
-          },
-          $selectedIndex: (index: number) => {
-            this.darkModeIndex = index;
-            this.getUIContext()
-              .getHostContext()
-            ?.getApplicationContext()
-              .setColorMode(this.darkModeIndex === 0
-                ? ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
-                : this.darkModeIndex === 1
-                  ? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
-                  : ConfigurationConstant.ColorMode.COLOR_MODE_DARK);
-          }
-        })
-          .width(this.ds.getSize(10))
+        if (deviceInfo.osFullName.startsWith('OpenHarmony')) {
+          TabSegmentButtonV2({
+            items: new SegmentButtonV2Items(
+              [
+                new SegmentButtonV2Item({ text: '跟随' }),
+                new SegmentButtonV2Item({ text: '浅色' }),
+                new SegmentButtonV2Item({ text: '深色' }),
+              ]
+            ),
+            selectedIndex: this.darkModeIndex,
+            buttonBackgroundColor: ColorMetrics.numeric(
+              parseInt(
+                (this.ds.getColor(this.ccm, 'surface', 100, 0.75) as string)
+                  .replace('#', ''),
+                16)
+            ),
+            itemSelectedBackgroundColor: ColorMetrics.numeric(
+              parseInt(
+                (this.ds.getColor(this.ccm, 'surface', 0, 0.5) as string)
+                  .replace('#', ''),
+                16)
+            ),
+            itemPadding: {
+              start: LengthMetrics.vp(0),
+              end: LengthMetrics.vp(0)
+            },
+            $selectedIndex: (index: number) => {
+              this.darkModeIndex = index;
+              this.getUIContext()
+                .getHostContext()
+              ?.getApplicationContext()
+                .setColorMode(this.darkModeIndex === 0
+                  ? ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
+                  : this.darkModeIndex === 1
+                    ? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+                    : ConfigurationConstant.ColorMode.COLOR_MODE_DARK);
+            }
+          })
+            .width(this.ds.getSize(10))
+        } else {
+        }
       }
       .backgroundColor(
         this.ds.getColor(this.ccm, 'surface', 100, 0.2)
