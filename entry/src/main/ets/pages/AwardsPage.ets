@@ -2,7 +2,7 @@ import { NumberObject, StringObject } from '../utils/BaseObjects';
 import { DesignSystem } from '../utils/DesignSystem';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { MissionArr, MissionInfo } from '../model/Mission';
+import { Award, AwardList } from '../model/Award';
 import { Header } from '../view/Header';
 import { BreakpointType, BreakpointTypeEnum } from '../utils/BreakpointSystem';
 
@@ -13,7 +13,7 @@ export struct AwardsPage {
     new MissionInfo('example1','an example',1,false),
     new MissionInfo('example2','an example',2,false),
   ]*/
-  @Local MissionArr: MissionArr = AppStorageV2.connect<MissionArr>(MissionArr, () => new MissionArr())!;
+  @Local AwardList: AwardList = AppStorageV2.connect<AwardList>(AwardList, () => new AwardList())!;
   @Local completed: boolean = true;
   @Consumer('DesignSystem') ds: DesignSystem = new DesignSystem();
   @Local ccm: NumberObject =
@@ -24,9 +24,9 @@ export struct AwardsPage {
       () => new StringObject(BreakpointTypeEnum.MD))!;
   /*@Local schedules: ScheduleList = AppStorageV2.connect<ScheduleList>(ScheduleList, () => new ScheduleList())!;*/
   @Local showDialog: boolean = false;
-  @Local MissionName: string = "";
-  @Local MissionDetails: string = "";
-  @Local MissionRequest: number = 0;
+  @Local title: string = "";
+  @Local description: string = "";
+  @Local cost: number = 0;
   @Event openSetting: () => void = () => {
   };
 
@@ -39,7 +39,7 @@ export struct AwardsPage {
         .margin({ bottom: 8 })
 
       TextInput({
-        text: this.MissionName!!,
+        text: this.title!!,
         placeholder: "请输入任务奖励",
       })
         .type(InputType.Normal)
@@ -58,7 +58,7 @@ export struct AwardsPage {
         .margin({ bottom: 8 })
 
       TextArea({
-        text: this.MissionDetails!!,
+        text: this.description!!,
         placeholder: "请输入奖励描述\n\n",
       })
         .margin({
@@ -74,7 +74,7 @@ export struct AwardsPage {
         Text("火种个数")
           .fontSize(this.ds.getSize(1))
           .fontWeight(FontWeight.Bold)
-        Text(this.MissionRequest.toFixed(0) + " 个")
+        Text(this.cost.toFixed(0) + " 个")
           .fontSize(this.ds.getSize(1))
           .fontWeight(FontWeight.Bold)
       }
@@ -82,7 +82,7 @@ export struct AwardsPage {
       .justifyContent(FlexAlign.SpaceBetween)
 
       Slider({
-        value: this.MissionRequest,
+        value: this.cost,
         step: 1,
         style: SliderStyle.InSet,
         max: 12,
@@ -92,7 +92,7 @@ export struct AwardsPage {
         .selectedColor(this.ds.getColor(this.ccm, 'primary', 500, 0.8))
         .showSteps(true)
         .onChange((value: number, mode: SliderChangeMode) => {
-          this.MissionRequest = value;
+          this.cost = value;
           console.info('value:' + value + 'mode:' + mode.toString());
         })
         .margin({
@@ -116,23 +116,22 @@ export struct AwardsPage {
             ],
           ]
         })
-        .opacity(this.MissionRequest && this.MissionName && this.MissionDetails ? 1 : 0.5)
+        .opacity(this.cost && this.title && this.description ? 1 : 0.5)
         .borderRadius(8)
         .width(this.ds.getSize(6))
         .height(this.ds.getSize(2.5))
         .alignSelf(ItemAlign.End)
         .onClick(() => {
-          if (this.MissionRequest && this.MissionName && this.MissionDetails) {
-            this.MissionArr.push(new MissionInfo(
-              this.MissionName,
-              this.MissionDetails,
-              this.MissionRequest,
-              false
+          if (this.cost && this.title && this.description) {
+            this.AwardList.push(new Award(
+              this.title,
+              this.description,
+              this.cost
             ));
             this.showDialog = false;
-            this.MissionName = "";
-            this.MissionDetails = "";
-            this.MissionRequest = 0;
+            this.title = "";
+            this.description = "";
+            this.cost = 0;
           } else {
             console.warn("请填写完整的计划信息");
           }
@@ -163,10 +162,10 @@ export struct AwardsPage {
             .margin({ bottom: this.ds.getSize(0.5) })
 
           if (
-            this.MissionArr.length > 0
+            this.AwardList.length > 0
           ) {
             List() {
-              ForEach(this.MissionArr, (item: MissionInfo, index: number) => {
+              ForEach(this.AwardList, (item: Award, index: number) => {
                 ListItem() {
                   Row() {
                     Image($r('app.media.material_symbols__star_shine_rounded'))
@@ -177,18 +176,18 @@ export struct AwardsPage {
                       )
                     Column({ space: this.ds.getSize(0.25) }) {
                       Row() {
-                        Text(item.MissionName)
+                        Text(item.title)
                           .fontSize(this.ds.getSize(1))
                           .fontWeight(FontWeight.Bold)
 
-                        Text(`售价：${item.MissionRequest} 火种`)
+                        Text(`售价：${item.cost} 火种`)
                           .fontSize(this.ds.getSize(0.8))
                           .fontWeight(FontWeight.Medium)
                       }
                       .justifyContent(FlexAlign.SpaceBetween)
                       .width('100%')
 
-                      Text(item.MissionDetails)
+                      Text(item.description)
                         .fontSize(this.ds.getSize(0.8))
                         .fontWeight(FontWeight.Medium)
                     }
@@ -222,7 +221,7 @@ export struct AwardsPage {
                   // .width('100%').height(100)
                   // .borderRadius(10).backgroundColor(this.ds.getColor(this.ccm, 'surface', 0, 1))
                 }
-              }, (item: MissionInfo) => item.MissionName)
+              }, (item: Award) => item.title)
             }
             .padding({ left: this.ds.getSize(1), right: this.ds.getSize(1) })
             .divider({

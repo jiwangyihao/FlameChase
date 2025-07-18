@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **推荐一下本人在开发过程中 fork 完善的用于 GitHub Action 的 HarmonyOS SDK（& ArkUI-X SDK）自动化设置工作流 [HarmonyOS GitHub Action setup](https://github.com/jiwangyihao/setup-harmonyos-sdk)，现已支持 `5.1.1`**
+
 # 逐火 - 设计草案
 
 「逐火」应用设计方案：一份叙事驱动的生产力工具蓝图
