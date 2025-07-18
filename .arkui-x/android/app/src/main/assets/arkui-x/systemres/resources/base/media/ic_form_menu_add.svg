@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Public/Icon/add</title>
+    <defs>
+        <path d="M10.75,19.25 C10.75,19.6642136 10.4142136,20 10,20 C9.58578644,20 9.25,19.6642136 9.25,19.25 L9.25,10.75 L0.75,10.75 C0.335786438,10.75 0,10.4142136 0,10 C0,9.58578644 0.335786438,9.25 0.75,9.25 L9.25,9.25 L9.25,0.75 C9.25,0.335786438 9.58578644,5.07265313e-17 10,0 C10.4142136,-7.6089797e-17 10.75,0.335786438 10.75,0.75 L10.75,19.25 Z M19.25,9.25 C19.6642136,9.25 20,9.58578644 20,10 C20,10.4142136 19.6642136,10.75 19.25,10.75 L11.75,10.75 L11.75,9.25 L19.25,9.25 Z" id="path-1"></path>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Public/Icon/add" transform="translate(2, 2)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <g id="形状结合"></g>
+            <g id="Symbol/color-light/colorPrimary" mask="url(#mask-2)" fill="#000000" fill-opacity="0.901960784">
+                <g transform="translate(-2, -2)" id="color/#000000">
+                    <rect x="0" y="0" width="24" height="24"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

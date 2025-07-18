@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic_compnent_titlebar_back_filled</title>
+    <defs>
+        <path d="M14.4310748,4.28822778 C14.8243084,3.90010843 15.457458,3.90452017 15.845254,4.29808168 C16.2330501,4.69164318 16.228642,5.32532071 15.8354084,5.71344006 L10.2172614,11.2585186 C9.85442569,11.6166354 9.82298404,12.1836728 10.1254347,12.5779521 L10.2134745,12.6782007 L15.8391968,18.2903192 C16.230356,18.6805326 16.2313863,19.3142247 15.841498,19.7057101 C15.4516097,20.0971954 14.8184456,20.0982266 14.4272863,19.7080132 L8.07597533,13.371956 C7.3003833,12.584833 7.30919942,11.3174779 8.0956667,10.5412392 L14.4310748,4.28822778 Z" id="path-1"></path>
+    </defs>
+    <g id="ic_compnent_titlebar_back_filled" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <mask id="mask-2" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <use id="路径" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+    </g>
+</svg>

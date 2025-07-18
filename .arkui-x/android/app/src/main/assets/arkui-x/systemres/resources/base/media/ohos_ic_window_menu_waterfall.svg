@@ -1,0 +1,12 @@
+<svg width="24.000000" height="24.000000" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<clipPath id="clip464_25444">
+			<rect id="属性 1=.full" width="24.000000" height="24.000000" fill="white" fill-opacity="0"/>
+		</clipPath>
+	</defs>
+	<rect id="属性 1=.full" width="24.000000" height="24.000000" fill="#FFFFFF" fill-opacity="0"/>
+	<g clip-path="url(#clip464_25444)">
+		<path id="矩形 1915 (边框)" d="M17 23C19.2 23 21 21.2 21 19L21 5C21 2.79 19.2 1 17 1L7 1C4.79 1 3 2.79 3 5L3 19C3 21.2 4.79 23 7 23L17 23ZM17 21.5C18.38 21.5 19.5 20.38 19.5 19L19.5 5C19.5 3.61 18.38 2.5 17 2.5L7 2.5C5.61 2.5 4.5 3.61 4.5 5L4.5 19C4.5 20.38 5.61 21.5 7 21.5L17 21.5Z" fill="#000000" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<rect id="矩形 1916" x="18.000000" y="4.000000" rx="1.000000" width="16.000000" height="12.000000" transform="rotate(90 18.000000 4.000000)" fill="#000000" fill-opacity="1.000000"/>
+	</g>
+</svg>

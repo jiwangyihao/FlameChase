@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic_add number</title>
+    <g id="ic_add-number" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="矩形" fill="#00CB87" x="5" y="0" width="35" height="24" rx="12"></rect>
+        <g id="ic_add" transform="translate(5.000000, 0.000000)">
+            <path d="M12.5833333,17.25 C12.5833333,17.5721661 12.3221661,17.8333333 12,17.8333333 C11.6778339,17.8333333 11.4166667,17.5721661 11.4166667,17.25 L11.4166667,12.5826667 L6.75,12.5833333 C6.4278339,12.5833333 6.16666667,12.3221661 6.16666667,12 C6.16666667,11.6778339 6.4278339,11.4166667 6.75,11.4166667 L11.4166667,11.4166667 L11.4166667,6.75 C11.4166667,6.4278339 11.6778339,6.16666667 12,6.16666667 C12.3221661,6.16666667 12.5833333,6.4278339 12.5833333,6.75 L12.5833333,17.25 Z M17.25,11.4166667 C17.5721661,11.4166667 17.8333333,11.6778339 17.8333333,12 C17.8333333,12.3221661 17.5721661,12.5833333 17.25,12.5833333 L13.1656667,12.5826667 L13.1656667,11.4166667 L17.25,11.4166667 Z" id="Combined-Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+        </g>
+        <text id="3" font-family="HarmonyHeiTi" font-size="14" font-weight="normal" fill="#FFFFFF">
+            <tspan x="24.01" y="17">1</tspan>
+        </text>
+    </g>
+</svg>
