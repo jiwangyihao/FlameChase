@@ -181,7 +181,11 @@ export struct AwardsPage {
                           .fontSize(this.ds.getSize(1))
                           .fontWeight(FontWeight.Bold)
 
+<<<<<<< Updated upstream
                         Text(`售价：${item.MissionRequest} 火种`)
+=======
+                        Text(`售价：${item.cost} 火种`)
+>>>>>>> Stashed changes
                           .fontSize(this.ds.getSize(0.8))
                           .fontWeight(FontWeight.Medium)
                       }

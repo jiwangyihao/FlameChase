@@ -80,6 +80,15 @@ export default class EntryAbility extends UIAbility {
     const tasks = new TaskList(schedules, coreflameGroupList!,
       ...(JSON.parse(taskPreferences.getSync('tasks', "[]") as string) as TaskESObject[]));
     AppStorageV2.connect<TaskList>(TaskList, () => tasks);
+<<<<<<< Updated upstream
+=======
+
+    //Initialize Award
+    const awardPreferences = preferences.getPreferencesSync(this.context, { name: 'Award' });
+    const awards =
+      new AwardList(...(JSON.parse(awardPreferences.getSync('awards', "[]") as string) as Award[]));
+    AppStorageV2.connect<AwardList>(AwardList, () => awards);
+>>>>>>> Stashed changes
   }
 
   onDestroy(): void {
