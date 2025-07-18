@@ -180,7 +180,7 @@ export struct AwardsPage {
                           .fontSize(this.ds.getSize(1))
                           .fontWeight(FontWeight.Bold)
 
-                        Text(`售价：${item.title} 火种`)
+                        Text(`售价：${item.cost} 火种`)
                           .fontSize(this.ds.getSize(0.8))
                           .fontWeight(FontWeight.Medium)
                       }
