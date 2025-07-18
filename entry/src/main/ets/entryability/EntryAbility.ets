@@ -7,6 +7,7 @@ import { preferences } from '@kit.ArkData';
 import { NumberObject } from '../utils/BaseObjects';
 import { Schedule, ScheduleList } from '../model/Schedule';
 import { TaskESObject, TaskList } from '../model/Task';
+import { Award, AwardList } from '../model/Award';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
@@ -38,6 +39,12 @@ function saveData(context: Context) {
     AppStorageV2.connect<TaskList>(TaskList, () => new TaskList(schedules, coreflameGroupList))!;
   taskPreferences.putSync('tasks', JSON.stringify(tasks.toESObject()));
   taskPreferences.flushSync();
+
+  const awardPreferences = preferences.getPreferencesSync(context, { name: 'Award' });
+  const awards =
+    AppStorageV2.connect<AwardList>(AwardList, () => new AwardList())!;
+  awardPreferences.putSync('awards', JSON.stringify(awards.toESObject()));
+  awardPreferences.flushSync();
 }
 
 export default class EntryAbility extends UIAbility {
@@ -80,6 +87,12 @@ export default class EntryAbility extends UIAbility {
     const tasks = new TaskList(schedules, coreflameGroupList!,
       ...(JSON.parse(taskPreferences.getSync('tasks', "[]") as string) as TaskESObject[]));
     AppStorageV2.connect<TaskList>(TaskList, () => tasks);
+
+    //Initialize Award
+    const awardPreferences = preferences.getPreferencesSync(this.context, { name: 'Award' });
+    const awards =
+      new AwardList(...(JSON.parse(awardPreferences.getSync('tasks', "[]") as string) as Award[]));
+    AppStorageV2.connect<AwardList>(AwardList, () => awards);
   }
 
   onDestroy(): void {
