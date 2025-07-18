@@ -1,7 +1,7 @@
 {
-  "modelVersion": "5.1.0",
+  "modelVersion": "5.1.1",
   "dependencies": {
-    "@ohos/hvigor-ohos-arkui-x-plugin": "4.2.18"
+    "@ohos/hvigor-ohos-arkui-x-plugin": "4.19.2"
   },
   "execution": {
     // "analyze": "normal",                     /* Define the build analyze mode. Value: [ "normal" | "advanced" | false ]. Default: "normal" */
