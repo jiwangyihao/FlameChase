@@ -91,7 +91,7 @@ export default class EntryAbility extends UIAbility {
     //Initialize Award
     const awardPreferences = preferences.getPreferencesSync(this.context, { name: 'Award' });
     const awards =
-      new AwardList(...(JSON.parse(awardPreferences.getSync('tasks', "[]") as string) as Award[]));
+      new AwardList(...(JSON.parse(awardPreferences.getSync('awards', "[]") as string) as Award[]));
     AppStorageV2.connect<AwardList>(AwardList, () => awards);
   }
 
