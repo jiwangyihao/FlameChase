@@ -241,6 +241,23 @@ struct Index {
           })
             .width(this.ds.getSize(10))
         } else {
+          Select([
+            { value: '跟随系统' },
+            { value: '保持浅色' },
+            { value: '保持深色' }
+          ])
+            .selected(this.darkModeIndex)
+            .onSelect((index: number) => {
+              this.darkModeIndex = index;
+              this.getUIContext()
+                .getHostContext()
+              ?.getApplicationContext()
+                .setColorMode(this.darkModeIndex === 0
+                  ? ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
+                  : this.darkModeIndex === 1
+                    ? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+                    : ConfigurationConstant.ColorMode.COLOR_MODE_DARK);
+            })
         }
       }
       .backgroundColor(
