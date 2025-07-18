@@ -107,7 +107,90 @@ export struct CoreflamesPage {
   }
 
   @Event openSetting: () => void = () => {
-  };
+  };  @Builder
+customDialogComponent(coreflame: Coreflame, dialogController: promptAction.DialogController) {
+  Column({space:this.ds.getSize(4)}) {
+    if (coreflame.name == "坏火") {
+      Text("收集失败.")
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+        .margin({ bottom: 16 })
+      Shape() {
+        Path()
+          .commands(this.parsePath("M 120 -18 Q 120 0 108 0 Q 120 0 120 18 Q 120 0 132 0 Q 120 0 120 -18 Z"))
+          .strokeWidth(1.5)
+          .stroke(this.ds.getColor(this.ccm, 'surface', 600, 0.25))
+          .fill(this.ds.getColor(this.ccm, 'surface', 800))
+      }
+      .viewPort({
+        x: 108,
+        y: -15,
+        width: 24,
+        height: 36
+      })
+      .width(this.ds.getSize(10))
+      .height(this.ds.getSize(10))
+    } else {
+      Text("收集成功！")
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+        .margin({ bottom: 16 })
+      Shape() {
+        Path()
+          .commands(this.parsePath("M 120 -18 Q 120 0 108 0 Q 120 0 120 18 Q 120 0 132 0 Q 120 0 120 -18 Z"))
+          .strokeWidth(1.5)
+          .stroke(this.ds.getColor(this.ccm, 'primary', 200, 0.25))
+          .fill(this.ds.getColor(this.ccm, 'primary', 400))
+      }
+      .viewPort({
+        x: 108,
+        y: -15,
+        width: 24,
+        height: 36
+      })
+      .width(this.ds.getSize(10))
+      .height(this.ds.getSize(10))
+    }
+
+    Text(coreflame.description)
+      .fontSize(20)     //改size
+      .fontWeight(FontWeight.Normal)
+      .fontColor('#666666')
+      .margin({ bottom: 36 })
+
+    if (coreflame.name == "坏火") {
+      Button('好的')
+        .backgroundColor(this.ds.getColor(this.ccm, 'surface', 800, 0.6))
+        .fontSize(20)
+        .fontColor('#ffffffff')
+        .width(120)
+        .height(45)
+        .borderRadius(8)
+        .opacity(0.5)
+    } else {
+      Button('好的')
+        .backgroundColor(this.ds.getColor(this.ccm, 'primary'))
+        .fontSize(20)
+        .fontColor('#ffffffff')
+        .width(120)
+        .height(45)
+        .borderRadius(8)
+        .opacity(0.5)
+    }
+  }
+  .backgroundColor(this.ds.getColor(this.ccm, 'surface', 0, 0))
+  .width('100%')
+  .height('100%')
+  .alignItems(HorizontalAlign.Center)
+  .justifyContent(FlexAlign.Center)
+  .padding({
+    top: px2vp(this.topRectHeight.value),
+    bottom: px2vp(this.bottomRectHeight.value),
+  })
+  .onClick(() => {
+    dialogController.close() // 使用控制器关闭
+  })
+}
 
   onDidBuild(): void {
     this.getUIContext()?.keyframeAnimateTo({
@@ -174,45 +257,7 @@ export struct CoreflamesPage {
     ]);
   }
 
-  @Builder
-  customDialogComponent(coreflame: Coreflame, dialogController: promptAction.DialogController) {
-    Column() {
-      if (coreflame.name == "坏火") {
-        Text("收集失败.")
-          .fontSize(30)
-          .fontWeight(FontWeight.Bold)
-          .margin({ bottom: 16 })
-      } else {
-        Text("收集成功！")
-          .fontSize(30)
-          .fontWeight(FontWeight.Bold)
-          .margin({ bottom: 16 })
-      }
-      Text(coreflame.description)
-        .fontSize(20)     //改size
-        .fontWeight(FontWeight.Normal)
-        .fontColor('#666666')
-        .margin({ bottom: 36 })
-      Button('好的')
-      // .backgroundColor('#E0E0E0')
-        .fontColor('#333333')
-        .width(120)
-        .height(45)
-        .borderRadius(8)
-    }
-    .backgroundColor(this.ds.getColor(this.ccm, 'surface', 0, 0))
-    .width('100%')
-    .height('100%')
-    .alignItems(HorizontalAlign.Center)
-    .justifyContent(FlexAlign.Center)
-    .padding({
-      top: px2vp(this.topRectHeight.value),
-      bottom: px2vp(this.bottomRectHeight.value),
-    })
-    .onClick(() => {
-      dialogController.close() // 使用控制器关闭
-    })
-  }
+
 
   @Builder
   startPanelBuilder() {
